@@ -24,7 +24,7 @@ public class Search_F extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_tour, null);
+        mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_search, null);
         initView();
         initData();
         return mRootView;

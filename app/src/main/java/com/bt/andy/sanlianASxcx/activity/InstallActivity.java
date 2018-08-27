@@ -18,23 +18,23 @@ import java.util.ArrayList;
 
 /**
  * @创建者 AndyYan
- * @创建时间 2018/8/24 13:38
+ * @创建时间 2018/8/27 9:47
  * @描述 ${TODO}
  * @更新者 $Author$
  * @更新时间 $Date$
  * @更新描述 ${TODO}
  */
 
-public class DistriActivity extends BaseActivity {
+public class InstallActivity extends BaseActivity {
     private TextView         mTv_title;
     private TabLayout        mTablayout;//导航标签
     private MyFixedViewpager mView_pager;//自我viewpager可实现禁止滑动
-    private String[] conts = {"待接单", "待提货", "上门服务", "服务完成"};
+    private String[] conts = {"待接单", "待预约", "上门服务", "服务完成"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_distri);
+        setContentView(R.layout.activity_install);
         initView();
         initData();
     }
@@ -46,13 +46,13 @@ public class DistriActivity extends BaseActivity {
     }
 
     private void initData() {
-        mTv_title.setText("配送");
+        mTv_title.setText("安装");
         // 创建一个集合,装填Fragment
         ArrayList<Fragment> fragments = new ArrayList<>();
         // 装填
         //待接单界面
-        ReceFragment tourPlanFragment = new ReceFragment();
-        fragments.add(tourPlanFragment);
+        ReceFragment receFragment = new ReceFragment();
+        fragments.add(receFragment);
         //待预约界面
         OrderFragment orderFragment = new OrderFragment();
         fragments.add(orderFragment);

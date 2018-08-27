@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.DistriActivity;
+import com.bt.andy.sanlianASxcx.activity.InstallActivity;
+import com.bt.andy.sanlianASxcx.activity.RepairActivity;
 
 import java.util.List;
 
@@ -74,14 +76,17 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.ViewHolder> {
     private void jumpToOtherAct(String title) {
         if ("配送".equals(title)) {
             Intent intent = new Intent(mContext, DistriActivity.class);
+            intent.putExtra("kind","0");
             mContext.startActivity(intent);
         }
         if ("安装".equals(title)) {
-            Intent intent = new Intent(mContext, DistriActivity.class);
+            Intent intent = new Intent(mContext, InstallActivity.class);
+            intent.putExtra("kind","1");
             mContext.startActivity(intent);
         }
         if ("维修".equals(title)) {
-            Intent intent = new Intent(mContext, DistriActivity.class);
+            Intent intent = new Intent(mContext, RepairActivity.class);
+            intent.putExtra("kind","2");
             mContext.startActivity(intent);
         }
     }

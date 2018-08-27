@@ -44,6 +44,10 @@
     <!-- 橙色 -->
     <color name="orange">#FFA500</color>
     <color name="red">#FF0000</color>
+    <!--褐色-->
+    <color name="brown">#660066</color>
+    <!--绿色-->
+    <color name="green_100">#ff039e00</color>
 
 
 </resources>

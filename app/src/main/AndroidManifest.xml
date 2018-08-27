@@ -61,6 +61,8 @@
         </activity>
         <activity android:name="com.bt.andy.sanlianASxcx.activity.meActivity.SettingActivity"/>
         <activity android:name=".activity.DistriActivity"/>
+        <activity android:name=".activity.InstallActivity"/>
+        <activity android:name=".activity.RepairActivity"/>
 
 
         <!-- Required SDK 核心功能-->
