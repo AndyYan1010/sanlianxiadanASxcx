@@ -22,7 +22,8 @@ public class MyApplication extends Application {
     public static boolean             isRelease    = false;//判断程序是否异常
     public static ArrayList<Activity> listActivity = new ArrayList<Activity>();//用来装载activity
     public static int                 flag         = -1;//判断是否被回收
-    public static String mLocationCity;
+    public static String userID;
+    public static String userName;
 
     @Override
     public void onCreate() {

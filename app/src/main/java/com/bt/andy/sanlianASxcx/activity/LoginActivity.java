@@ -1,26 +1,31 @@
 package com.bt.andy.sanlianASxcx.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import com.bt.andy.sanlianASxcx.BaseActivity;
 import com.bt.andy.sanlianASxcx.MainActivity;
+import com.bt.andy.sanlianASxcx.MyApplication;
+import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
+import com.bt.andy.sanlianASxcx.messegeInfo.LoginInfo;
+import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
+import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
+import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
+import com.bt.andy.sanlianASxcx.utils.SpUtils;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
+import okhttp3.Request;
 
 /**
  * @创建者 AndyYan
@@ -33,7 +38,8 @@ import cn.jpush.android.api.TagAliasCallback;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
     private static final int BAIDU_Dingwei_STATE = 100;
-    private Button bt_driver;//司机登录按钮
+    private Button   bt_driver;//司机登录按钮
+    private EditText edit_num, edit_psd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,17 +50,79 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void getView() {
+        edit_num = (EditText) findViewById(R.id.edit_num);
+        edit_psd = (EditText) findViewById(R.id.edit_psd);
         bt_driver = (Button) findViewById(R.id.bt_driver);
     }
 
     private void setData() {
         bt_driver.setOnClickListener(this);
-        //设置别名
-//        setAlias();
     }
 
-    private void setAlias() {
-        String alias = "9527";
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.bt_driver:
+                String name = String.valueOf(edit_num.getText()).trim();
+                String psd = String.valueOf(edit_psd.getText()).trim();
+                if ("".equals(name) || "请输入账号".equals(name)) {
+                    ToastUtils.showToast(LoginActivity.this, "请输入账号");
+                    return;
+                }
+                if ("".equals(psd) || "请输入密码".equals(psd)) {
+                    ToastUtils.showToast(LoginActivity.this, "请输入密码");
+                    return;
+                }
+                loginToService(name, psd);
+                break;
+        }
+    }
+
+    private void loginToService(String name, String psd) {
+        ProgressDialogUtil.startShow(LoginActivity.this, "正在登录请稍后");
+        String loginUrl = NetConfig.LOGINURL;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("username", name);
+        params.put("password", psd);
+        HttpOkhUtils.getInstance().doPost(loginUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(LoginActivity.this, "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(LoginActivity.this, code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                LoginInfo loginInfo = gson.fromJson(resbody, LoginInfo.class);
+                int result = loginInfo.getResult();
+                if (result == 1) {
+                    MyApplication.userName = loginInfo.getUsername();
+                    MyApplication.userID = loginInfo.getId();
+                    String isAlias = SpUtils.getString(LoginActivity.this, "IsAlias", "");
+                    //判断是否设置过别名
+                    if ("".equals(isAlias) || !"1".equals(isAlias)) {
+                        //推送设置别名
+                        setAlias(loginInfo.getId());
+                    }
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else if (result == 2) {
+                    ToastUtils.showToast(LoginActivity.this, "密码错误");
+                } else {
+                    ToastUtils.showToast(LoginActivity.this, "登录失败");
+                }
+            }
+        });
+    }
+
+    private void setAlias(String id) {
+        String alias = id;
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, alias));
     }
@@ -67,13 +135,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 case 0:
                     logs = "Set tag and alias success";
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
-                    ToastUtils.showToast(LoginActivity.this,"success");
+                    ToastUtils.showToast(LoginActivity.this, "success");
+                    SpUtils.putString(LoginActivity.this, "IsAlias", "1");
                     break;
                 case 6002:
                     logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
                     // 延迟 60 秒来调用 Handler 设置别名
                     mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, alias), 1000 * 60);
-                    ToastUtils.showToast(LoginActivity.this,"延迟 60 秒");
+                    ToastUtils.showToast(LoginActivity.this, "延迟 60 秒");
                     break;
                 default:
                     logs = "Failed with errorCode = " + code;
@@ -97,57 +166,4 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }
     };
-
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.bt_driver:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED
-                            || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED
-                            || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(getApplicationContext(), "没有权限,请手动开启定位权限", Toast.LENGTH_SHORT).show();
-                        // 申请一个（或多个）权限，并提供用于回调返回的获取码（用户定义）
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE}, BAIDU_Dingwei_STATE);
-                    } else {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                } else {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                //                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                //                startActivity(intent);
-                //                finish();
-
-                break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            //requestCode即所声明的权限获取码，在checkSelfPermission时传入
-            case BAIDU_Dingwei_STATE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // 获取到权限，作相应处理（调用定位SDK应当确保相关权限均被授权，否则可能引起定位失败）
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
-                } else {
-                    // 没有获取到权限，做特殊处理
-                    Toast.makeText(getApplicationContext(), "获取位置权限失败，请手动开启", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                break;
-        }
-    }
 }
