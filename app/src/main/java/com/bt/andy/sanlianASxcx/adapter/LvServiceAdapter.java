@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.UploadPicActivity;
+import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
@@ -33,13 +34,14 @@ import okhttp3.Request;
  */
 
 public class LvServiceAdapter extends BaseAdapter {
-
     private Context mContext;
     private List    mList;
+    private String  mKind;
 
-    public LvServiceAdapter(Context context, List<String> list) {
+    public LvServiceAdapter(Context context, List<String> list, String kind) {
         this.mContext = context;
         this.mList = list;
+        this.mKind = kind;
     }
 
     @Override
@@ -83,39 +85,75 @@ public class LvServiceAdapter extends BaseAdapter {
         viewholder.tv_compl.setBackgroundResource(R.drawable.bg_round_brown);
         viewholder.tv_accept.setText("上传");
 
-
         //填充信息
-        final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-        viewholder.tv_num.setText(bean.getForderno());
-        viewholder.tv_address.setText(bean.getFaddress());
-        viewholder.tv_cont.setText(bean.getFpeople());
-        viewholder.tv_contPhone.setText(bean.getFtel());
-        viewholder.tv_warn.setText(bean.getSpecial_note());
-        viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //配送上传图片
-                upPic();
-            }
-        });
-        viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String ftel = bean.getFtel();
-                if (ftel.equals("")) {
-                    ToastUtils.showToast(mContext, "该订单没有留存电话");
-                    return;
+        if ("0".equals(mKind)) {
+            final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
+            viewholder.tv_num.setText(bean.getForderno());
+            viewholder.tv_address.setText(bean.getFaddress());
+            viewholder.tv_cont.setText(bean.getFpeople());
+            viewholder.tv_contPhone.setText(bean.getFtel());
+            viewholder.tv_warn.setText(bean.getSpecial_note());
+            viewholder.tv_compl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //确认完成
+                    completeOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
                 }
-                ShowCallUtil.showCallDialog(mContext, ftel);
-            }
-        });
-        viewholder.tv_compl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //确认完成
-                completeOrder(bean.getId(), i);
-            }
-        });
+            });
+            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+                    if (null == orderID || "".equals(orderID)) {
+                        ToastUtils.showToast(mContext, "该订单没有获取到id");
+                        return;
+                    }
+                    //上传图片
+                    upPic(orderID);
+                }
+            });
+            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String phoneNum = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
+                    if (null == phoneNum || "".equals(phoneNum)) {
+                        ToastUtils.showToast(mContext, "该订单没有留存电话");
+                        return;
+                    }
+                    ShowCallUtil.showCallDialog(mContext, phoneNum);
+                }
+            });
+        } else {
+            final AnzYuyueInfo info = (AnzYuyueInfo) mList.get(i);
+            viewholder.tv_num.setText(info.getForderno());
+            viewholder.tv_address.setText(info.getFaddress());
+            viewholder.tv_cont.setText(info.getFpeople());
+            viewholder.tv_contPhone.setText(info.getFtel());
+            viewholder.tv_warn.setText(info.getSpecial_note());
+            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String orderID = ((AnzYuyueInfo) mList.get(i)).getId();
+                    if (null == orderID || "".equals(orderID)) {
+                        ToastUtils.showToast(mContext, "该订单没有获取到id");
+                        return;
+                    }
+                    //上传图片
+                    upPic(orderID);
+                }
+            });
+            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String phoneNum = ((AnzYuyueInfo) mList.get(i)).getFtel();
+                    if (null == phoneNum || "".equals(phoneNum)) {
+                        ToastUtils.showToast(mContext, "该订单没有留存电话");
+                        return;
+                    }
+                    ShowCallUtil.showCallDialog(mContext, phoneNum);
+                }
+            });
+        }
         return view;
     }
 
@@ -124,9 +162,10 @@ public class LvServiceAdapter extends BaseAdapter {
         TextView tv_accept, tv_call_phone, tv_compl, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void upPic() {
+    private void upPic(String orderID) {
         //TODO:还需要哪些提交信息?
         Intent intent = new Intent(mContext, UploadPicActivity.class);
+        intent.putExtra("orderID", orderID);
         mContext.startActivity(intent);
     }
 

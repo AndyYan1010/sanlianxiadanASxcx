@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
+import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
@@ -90,23 +91,66 @@ public class LvOrderAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     //提货
-                    getTheGoods(bean.getId(), i);
+                    getTheGoods(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
                 }
             });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final String ftel = bean.getFtel();
-                    if (ftel.equals("")) {
+                    final String ftel = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
+                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+                    if (null == ftel || "".equals(ftel)) {
                         ToastUtils.showToast(mContext, "该订单没有留存电话");
                         return;
                     }
-                    ShowCallUtil.showCallDialog(mContext, ftel);
+                    ShowCallUtil.showCallDialog(mContext, ftel,orderID);
                 }
             });
         } else {
             viewholder.tv_accept.setText("扫码");
             viewholder.tv_call_phone.setText("打电话");
+            if ("1".equals(mKind)) {//安装
+                AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
+                viewholder.tv_num.setText(anzYuyueInfo.getForderno());
+                viewholder.tv_address.setText(anzYuyueInfo.getFaddress());
+                viewholder.tv_cont.setText(anzYuyueInfo.getFpeople());
+                viewholder.tv_contPhone.setText(anzYuyueInfo.getFtel());
+                viewholder.tv_warn.setText(anzYuyueInfo.getSpecial_note());
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO:安装预约
+
+                    }
+                });
+                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String phoneNum = ((AnzYuyueInfo) mList.get(i)).getFtel();
+                        String orderID = ((AnzYuyueInfo) mList.get(i)).getId();
+                        //拨打电话
+                        if (null == phoneNum || "".equals(phoneNum)) {
+                            ToastUtils.showToast(mContext, "该订单没有留存电话");
+                            return;
+                        }
+                        ShowCallUtil.showCallDialog(mContext, phoneNum,orderID);
+                    }
+                });
+            } else {//维修
+                //TODO:
+                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String phoneNum = "";
+                        //拨打电话
+                        if (null == phoneNum || "".equals(phoneNum)) {
+                            ToastUtils.showToast(mContext, "该订单没有留存电话");
+                            return;
+                        }
+                        ShowCallUtil.showCallDialog(mContext, phoneNum,"");
+                    }
+                });
+            }
         }
         return view;
     }

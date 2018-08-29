@@ -34,7 +34,7 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // 实例化展示的view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.photo_recy_item, parent, false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.photo_recy_item, parent, false);
         // 实例化viewholder
         ViewHolder viewHolder = new ViewHolder(v);
         return viewHolder;
@@ -51,9 +51,8 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     //调用相册
-                    Intent intent = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                    startActivityForResult(intent, IMAGE);
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    //                    startActivityForResult(intent, IMAGE);
                 }
             });
         } else {
@@ -74,6 +73,8 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
 
         public ViewHolder(View itemView) {
             super(itemView);
+            img_delet = itemView.findViewById(R.id.img_delet);
+            img_add_photo = itemView.findViewById(R.id.img_add_photo);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.bt.andy.sanlianASxcx.messegeInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -20,10 +22,11 @@ public class PeiSInfo {
      * psstatus : 0
      */
 
-    private int result;
-    private String          fopenid;
-    private String          psstatus;
-    private List<ApplyBean> apply;
+    private int                   result;
+    private String                fopenid;
+    private String                psstatus;
+    private List<ApplyBean>       apply;
+    private List<OrderazlistBean> orderazlist;
 
     public int getResult() {
         return result;
@@ -55,6 +58,14 @@ public class PeiSInfo {
 
     public void setApply(List<ApplyBean> apply) {
         this.apply = apply;
+    }
+
+    public List<OrderazlistBean> getOrderazlist() {
+        return orderazlist;
+    }
+
+    public void setOrderazlist(List<OrderazlistBean> orderazlist) {
+        this.orderazlist = orderazlist;
     }
 
     public static class ApplyBean {
@@ -320,6 +331,183 @@ public class PeiSInfo {
 
         public void setFtype1(Object ftype1) {
             this.ftype1 = ftype1;
+        }
+    }
+
+    public static class OrderazlistBean {
+        /**
+         * note :
+         * orderno : OR18-08-2900226
+         * purchase : 4
+         * fname1 : 4
+         * psstatus : 1
+         * FPrice : 4
+         * azfdate : 2018-08-29 08:44:53.0000000
+         * FAmount : 4
+         * fmobile : 18234567890
+         * FDeliveryAddress : 4
+         * FQty : 4
+         * ftype :
+         * fcontact : 测试安装4
+         * ftype1 : 1
+         * bpmstatus : q
+         * id : 40288afd6583198801658323f8320002
+         * chargetype : 0
+         */
+
+        private String note;
+        private String orderno;
+        private String purchase;
+        private String fname1;
+        @SerializedName("psstatus")
+        private String psstatusX;
+        private double FPrice;
+        private String azfdate;
+        private double FAmount;
+        private String fmobile;
+        private String FDeliveryAddress;
+        private double FQty;
+        private String ftype;
+        private String fcontact;
+        private String ftype1;
+        private String bpmstatus;
+        private String id;
+        private String chargetype;
+
+        public String getNote() {
+            return note;
+        }
+
+        public void setNote(String note) {
+            this.note = note;
+        }
+
+        public String getOrderno() {
+            return orderno;
+        }
+
+        public void setOrderno(String orderno) {
+            this.orderno = orderno;
+        }
+
+        public String getPurchase() {
+            return purchase;
+        }
+
+        public void setPurchase(String purchase) {
+            this.purchase = purchase;
+        }
+
+        public String getFname1() {
+            return fname1;
+        }
+
+        public void setFname1(String fname1) {
+            this.fname1 = fname1;
+        }
+
+        public String getPsstatusX() {
+            return psstatusX;
+        }
+
+        public void setPsstatusX(String psstatusX) {
+            this.psstatusX = psstatusX;
+        }
+
+        public double getFPrice() {
+            return FPrice;
+        }
+
+        public void setFPrice(double FPrice) {
+            this.FPrice = FPrice;
+        }
+
+        public String getAzfdate() {
+            return azfdate;
+        }
+
+        public void setAzfdate(String azfdate) {
+            this.azfdate = azfdate;
+        }
+
+        public double getFAmount() {
+            return FAmount;
+        }
+
+        public void setFAmount(double FAmount) {
+            this.FAmount = FAmount;
+        }
+
+        public String getFmobile() {
+            return fmobile;
+        }
+
+        public void setFmobile(String fmobile) {
+            this.fmobile = fmobile;
+        }
+
+        public String getFDeliveryAddress() {
+            return FDeliveryAddress;
+        }
+
+        public void setFDeliveryAddress(String FDeliveryAddress) {
+            this.FDeliveryAddress = FDeliveryAddress;
+        }
+
+        public double getFQty() {
+            return FQty;
+        }
+
+        public void setFQty(double FQty) {
+            this.FQty = FQty;
+        }
+
+        public String getFtype() {
+            return ftype;
+        }
+
+        public void setFtype(String ftype) {
+            this.ftype = ftype;
+        }
+
+        public String getFcontact() {
+            return fcontact;
+        }
+
+        public void setFcontact(String fcontact) {
+            this.fcontact = fcontact;
+        }
+
+        public String getFtype1() {
+            return ftype1;
+        }
+
+        public void setFtype1(String ftype1) {
+            this.ftype1 = ftype1;
+        }
+
+        public String getBpmstatus() {
+            return bpmstatus;
+        }
+
+        public void setBpmstatus(String bpmstatus) {
+            this.bpmstatus = bpmstatus;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getChargetype() {
+            return chargetype;
+        }
+
+        public void setChargetype(String chargetype) {
+            this.chargetype = chargetype;
         }
     }
 }

@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.messegeInfo.InstAndRepInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
@@ -35,11 +34,13 @@ public class LvAcceptAdapter extends BaseAdapter {
     private Context mContext;
     private List    mList;
     private String  mKind;//0是配送，1是安装，2是维修
+    private String  mType;//类别：rob抢单，plan排单
 
-    public LvAcceptAdapter(Context context, List list, String kind) {
+    public LvAcceptAdapter(Context context, List list, String kind, String type) {
         this.mContext = context;
         this.mList = list;
         this.mKind = kind;
+        this.mType = type;
     }
 
     @Override
@@ -80,45 +81,74 @@ public class LvAcceptAdapter extends BaseAdapter {
         viewholder.tv_call_phone.setBackgroundResource(R.drawable.bg_round_green);
         if ("0".equals(mKind)) {
             viewholder.tv_call_phone.setVisibility(View.VISIBLE);
-            final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-            viewholder.tv_num.setText(bean.getForderno());
-            viewholder.tv_address.setText(bean.getFaddress());
-            viewholder.tv_cont.setText(bean.getFpeople());
-            viewholder.tv_contPhone.setText(bean.getFtel());
-            viewholder.tv_warn.setText(bean.getSpecial_note());
-            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //接单
-                    acceptThisOrder(bean.getId(), i);
-                }
-            });
-            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final String ftel = bean.getFtel();
-                    if (ftel.equals("")) {
-                        ToastUtils.showToast(mContext, "该订单没有留存电话");
-                        return;
+            if ("rob".equals(mType)) {
+                final PeiSInfo.OrderazlistBean bean = (PeiSInfo.OrderazlistBean) mList.get(i);
+                viewholder.tv_num.setText(bean.getOrderno());
+                viewholder.tv_address.setText(bean.getFDeliveryAddress());
+                viewholder.tv_cont.setText(bean.getFcontact());
+                viewholder.tv_contPhone.setText(bean.getFmobile());
+                viewholder.tv_warn.setText(bean.getNote());
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //接单
+                        acceptThisOrder(((PeiSInfo.OrderazlistBean) mList.get(i)).getId(), i);
                     }
-                    ShowCallUtil.showCallDialog(mContext, ftel);
-                }
-            });
+                });
+                //打电话
+                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String phone = ((PeiSInfo.OrderazlistBean) mList.get(i)).getFmobile();
+                        if (null == phone || "".equals(phone)) {
+                            ToastUtils.showToast(mContext, "该订单没有留存电话");
+                            return;
+                        }
+                        ShowCallUtil.showCallDialog(mContext, phone);
+                    }
+                });
+            } else {
+                final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
+                viewholder.tv_num.setText(bean.getForderno());
+                viewholder.tv_address.setText(bean.getFaddress());
+                viewholder.tv_cont.setText(bean.getFpeople());
+                viewholder.tv_contPhone.setText(bean.getFtel());
+                viewholder.tv_warn.setText(bean.getSpecial_note());
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //接单
+                        acceptThisOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
+                    }
+                });
+                //打电话
+                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String phone = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
+                        if (null == phone || "".equals(phone)) {
+                            ToastUtils.showToast(mContext, "该订单没有留存电话");
+                            return;
+                        }
+                        ShowCallUtil.showCallDialog(mContext, phone);
+                    }
+                });
+            }
         } else {
             viewholder.tv_call_phone.setVisibility(View.GONE);
-            final InstAndRepInfo info = (InstAndRepInfo) mList.get(i);
-            viewholder.tv_num.setText(info.getForderno());
-            viewholder.tv_address.setText(info.getFaddress());
-            viewholder.tv_cont.setText(info.getFpeople());
-            viewholder.tv_contPhone.setText(info.getFtel());
-            viewholder.tv_warn.setText(info.getSpecial_note());
-            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //接单
-                    acceptOrder02(info.getId(), i);
-                }
-            });
+            //            final InstAndRepInfo info = (InstAndRepInfo) mList.get(i);
+            //            viewholder.tv_num.setText(info.getForderno());
+            //            viewholder.tv_address.setText(info.getFaddress());
+            //            viewholder.tv_cont.setText(info.getFpeople());
+            //            viewholder.tv_contPhone.setText(info.getFtel());
+            //            viewholder.tv_warn.setText(info.getSpecial_note());
+            //            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+            //                @Override
+            //                public void onClick(View view) {
+            //                    //接单
+            //                    acceptOrder02(info.getId(), i);
+            //                }
+            //            });
         }
         return view;
     }
@@ -135,6 +165,10 @@ public class LvAcceptAdapter extends BaseAdapter {
 
     //接单
     private void acceptThisOrder(String orderID, final int item) {
+        if (null == orderID || "".equals(orderID)) {
+            ToastUtils.showToast(mContext, "该订单没有获取到id");
+            return;
+        }
         ProgressDialogUtil.startShow(mContext, "正在查询，请稍后...");
         String pswcSUrl = NetConfig.PSWC1;
         RequestParamsFM params = new RequestParamsFM();

@@ -24,8 +24,22 @@ public class NetConfig {
     //提交图片
     public static String PSIMAGE      = ROOT + "psimage.do";
 
-    //安装//维修
+    //安装
     //待接单
     public static String SELECTAPPLY = ROOT + "selectapply.do";
+    //待预约
+    public static String DAIYUYUE = ROOT + "daiyuyue.do";
+    //上门服务
+    public static String SMFW = ROOT + "smfw.do";
 
+
+
+
+    //维修
+    //待接单
+    public static String SELECTAPPLYWX = ROOT + "selectapplywx.do";
+    //待预约
+    public static String DAIYUYUEWX = ROOT + "daiyuyuewx.do";
+    //上门服务
+    public static String SMFWWX = ROOT + "smfwwx.do";
 }

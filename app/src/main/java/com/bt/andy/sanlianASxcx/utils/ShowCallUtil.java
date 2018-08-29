@@ -9,6 +9,10 @@ import android.support.v7.app.AlertDialog;
 
 import com.bt.andy.sanlianASxcx.R;
 
+import java.io.IOException;
+
+import okhttp3.Request;
+
 /**
  * @创建者 AndyYan
  * @创建时间 2018/8/28 11:13
@@ -20,7 +24,7 @@ import com.bt.andy.sanlianASxcx.R;
 
 public class ShowCallUtil {
 
-    public static void showCallDialog(final Context context, final String ftel){
+    public static void showCallDialog(final Context context, final String ftel, final String orderID) {
         //弹出dialog
         AlertDialog dialog = new AlertDialog.Builder(context).create();
         dialog.setIcon(R.drawable.icon_phone);      //设置图标
@@ -33,6 +37,8 @@ public class ShowCallUtil {
                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + ftel));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+                //调用服务器，call接口
+                sendMsgToCallInter(orderID);
             }
         });//设置确定键
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "复制电话号码", new DialogInterface.OnClickListener() {
@@ -50,5 +56,22 @@ public class ShowCallUtil {
             }
         });
         dialog.show();
+    }
+
+    private static void sendMsgToCallInter(String orderID) {
+        String callUrl = "";
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        HttpOkhUtils.getInstance().doGetWithParams(callUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+
+            }
+        });
     }
 }

@@ -2,29 +2,28 @@ package com.bt.andy.sanlianASxcx.fragment;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.adapter.LvAcceptAdapter;
+import com.bt.andy.sanlianASxcx.adapter.MyPagerAdapter;
 import com.bt.andy.sanlianASxcx.messegeInfo.InstAndRepInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
+import com.bt.andy.sanlianASxcx.viewmodle.MyFixedViewpager;
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,10 +41,14 @@ import okhttp3.Request;
  */
 
 public class ReceFragment extends Fragment {
-    private View            mRootView;
-    private ListView        lv_tour;
-    private List            mData;
-    private LvAcceptAdapter tourPlanAdapter;
+    private View               mRootView;
+    private SmartRefreshLayout smt_refresh;
+    private String[] conts = {"抢单", "排单"};
+    private TabLayout         mTablayout;//导航标签
+    private MyFixedViewpager  mView_pager;//自我viewpager可实现禁止滑动
+    private RobOrderFragment  robFragment;
+    private PlanOrderFragment planFragment;
+    private String            mKind;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,68 +59,104 @@ public class ReceFragment extends Fragment {
     }
 
     private void initView() {
-        lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
+        smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
+        mTablayout = mRootView.findViewById(R.id.tablayout);
+        mView_pager = mRootView.findViewById(R.id.view_pager);
     }
 
     private void initData() {
-        String kind = getActivity().getIntent().getStringExtra("kind");
-        mData = new ArrayList();
-        //        mData.add("1");
-        //        mData.add("2");
-        //        mData.add("3");
-        //        mData.add("4");
-        //        mData.add("5");
-        tourPlanAdapter = new LvAcceptAdapter(getContext(), mData, kind);
-        lv_tour.setAdapter(tourPlanAdapter);
-        lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mKind = getActivity().getIntent().getStringExtra("kind");
+        // 创建一个集合,装填Fragment
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        // 装填
+        //抢单界面
+        robFragment = new RobOrderFragment();
+        fragments.add(robFragment);
+        //排界面
+        planFragment = new PlanOrderFragment();
+        fragments.add(planFragment);
+        // 创建ViewPager适配器
+        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
+        myPagerAdapter.setFragments(fragments);
+        // 给ViewPager设置适配器
+        mView_pager.setAdapter(myPagerAdapter);
+        //设置viewpager不可滑动
+        //mView_pager_space.setCanScroll(false);
+        //tablayout关联tablayout和viewpager实现联动
+        mTablayout.setupWithViewPager(mView_pager);
+        for (int i = 0; i < conts.length; i++) {
+            mTablayout.getTabAt(i).setText(conts[i]);
+        }
+        //获取待接单
+        getPendOrder();
+        smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO:弹出详情
-                ToastUtils.showToast(getContext(), "弹出详情");
-                showMoreInfo();
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                //获取待接单
+                getPendOrder();
             }
         });
-        if ("0".equals(kind)) {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //获取待接单
+        getPendOrder();
+    }
+
+    //获取待接单
+    private void getPendOrder() {
+        if ("0".equals(mKind)) {
             //获取配送单
             getPeiSong();
-        } else if ("1".equals(kind)) {
+        } else if ("1".equals(mKind)) {
             //获取安装待接单
             getAzInfo();
-        } else if ("2".equals(kind)) {
+        } else if ("2".equals(mKind)) {
             //获取维修待接单
             getWxInfo();
         }
-
-    }
-
-    private void showMoreInfo() {
-        View v = View.inflate(getContext(), R.layout.alert_ps_jd, null);
-        TextView tv_address = v.findViewById(R.id.tv_address);
-        TextView tv_date = v.findViewById(R.id.tv_date);
-        TextView tv_jdate = v.findViewById(R.id.tv_jdate);
-        TextView tv_azdate = v.findViewById(R.id.tv_azdate);
-        TextView tv_task = v.findViewById(R.id.tv_task);
-        TextView tv_person = v.findViewById(R.id.tv_person);
-        TextView tv_close = v.findViewById(R.id.tv_close);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setView(v).setTitle("详细信息").show();
-        tv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.create().dismiss();
-            }
-        });
     }
 
     private void getWxInfo() {
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
+        String wxUrl = NetConfig.SELECTAPPLYWX;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", MyApplication.userID);
+        HttpOkhUtils.getInstance().doGetWithParams(wxUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                ToastUtils.showToast(getContext(), "网络连接错误");
+            }
 
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                if (code != 200) {
+                    ToastUtils.showToast(getContext(), code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                InstAndRepInfo instInfo = gson.fromJson(resbody, InstAndRepInfo.class);
+                int result = instInfo.getResult();
+                if (result == 1) {
+                    List<InstAndRepInfo.OrderazlistBean> orderazlist = instInfo.getOrderazlist();
+                    robFragment.setDataList(orderazlist);
+                    List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
+                    planFragment.setDataList(apply);
+                } else {
+                    ToastUtils.showToast(getContext(), "获取安装单失败");
+                }
+            }
+        });
     }
 
     private void getAzInfo() {
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
         String azUrl = NetConfig.SELECTAPPLY;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", MyApplication.userID);
@@ -125,27 +164,28 @@ public class ReceFragment extends Fragment {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
                 ToastUtils.showToast(getContext(), "网络连接错误");
             }
 
             @Override
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
                 if (code != 200) {
                     ToastUtils.showToast(getContext(), code + "网络连接错误");
                     return;
                 }
                 Gson gson = new Gson();
-                try {
-                    JSONArray jsonArray = new JSONArray(resbody);
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        InstAndRepInfo info = gson.fromJson(jsonArray.get(i).toString(), InstAndRepInfo.class);
-                        mData.add(info);
-                    }
-                    tourPlanAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToastUtils.showToast(getContext(), "数据解析失败");
+                InstAndRepInfo instInfo = gson.fromJson(resbody, InstAndRepInfo.class);
+                int result = instInfo.getResult();
+                if (result == 1) {
+                    List<InstAndRepInfo.OrderazlistBean> orderazlist = instInfo.getOrderazlist();
+                    robFragment.setDataList(orderazlist);
+                    List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
+                    planFragment.setDataList(apply);
+                } else {
+                    ToastUtils.showToast(getContext(), "获取安装单失败");
                 }
             }
         });
@@ -153,7 +193,6 @@ public class ReceFragment extends Fragment {
 
     private void getPeiSong() {
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
         String peiSUrl = NetConfig.SELECTAPPLY1;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", MyApplication.userID);
@@ -162,12 +201,14 @@ public class ReceFragment extends Fragment {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
                 ToastUtils.showToast(getContext(), "网络连接错误");
             }
 
             @Override
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
                 if (code != 200) {
                     ToastUtils.showToast(getContext(), code + "网络连接错误");
                     return;
@@ -176,11 +217,10 @@ public class ReceFragment extends Fragment {
                 PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
                 int result = peiSInfo.getResult();
                 if (result == 1) {
-                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
-                    for (PeiSInfo.ApplyBean bean : apply) {
-                        mData.add(bean);
-                    }
-                    tourPlanAdapter.notifyDataSetChanged();
+                    List<PeiSInfo.OrderazlistBean> orderazlist = peiSInfo.getOrderazlist();//抢单
+                    robFragment.setDataList(orderazlist);
+                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();//排单
+                    planFragment.setDataList(apply);
                 } else {
                     ToastUtils.showToast(getContext(), "获取配送单失败");
                 }
