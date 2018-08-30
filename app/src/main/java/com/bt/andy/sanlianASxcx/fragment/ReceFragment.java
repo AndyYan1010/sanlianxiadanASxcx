@@ -62,10 +62,11 @@ public class ReceFragment extends Fragment {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
         mTablayout = mRootView.findViewById(R.id.tablayout);
         mView_pager = mRootView.findViewById(R.id.view_pager);
+        mKind = getActivity().getIntent().getStringExtra("kind");
+        smt_refresh.setEnableLoadMore(false);
     }
 
     private void initData() {
-        mKind = getActivity().getIntent().getStringExtra("kind");
         // 创建一个集合,装填Fragment
         ArrayList<Fragment> fragments = new ArrayList<>();
         // 装填
@@ -80,6 +81,7 @@ public class ReceFragment extends Fragment {
         myPagerAdapter.setFragments(fragments);
         // 给ViewPager设置适配器
         mView_pager.setAdapter(myPagerAdapter);
+//        mView_pager.setOffscreenPageLimit(4);
         //设置viewpager不可滑动
         //mView_pager_space.setCanScroll(false);
         //tablayout关联tablayout和viewpager实现联动

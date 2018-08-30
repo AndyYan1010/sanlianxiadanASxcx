@@ -31,8 +31,8 @@ public class NetConfig {
     public static String DAIYUYUE = ROOT + "daiyuyue.do";
     //上门服务
     public static String SMFW = ROOT + "smfw.do";
-
-
+    //服务完成
+    public static String FWWC = ROOT + "fwwc.do";
 
 
     //维修
@@ -42,4 +42,14 @@ public class NetConfig {
     public static String DAIYUYUEWX = ROOT + "daiyuyuewx.do";
     //上门服务
     public static String SMFWWX = ROOT + "smfwwx.do";
+    //服务完成
+    public static String FWWCWX = ROOT + "fwwcwx.do";
+
+
+    //抢单订单更改状态
+    public static String UPDATEORDER = ROOT + "updateorder.do";
+    //分配单接单
+    public static String YUYUE = ROOT + "yuyue.do";
+    //拨打电话，接口
+    public static String CALL = ROOT + "call.do";
 }

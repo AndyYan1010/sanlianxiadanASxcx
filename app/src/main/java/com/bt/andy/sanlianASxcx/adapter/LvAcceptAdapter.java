@@ -6,9 +6,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
+import com.bt.andy.sanlianASxcx.messegeInfo.InstAndRepInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.messegeInfo.UpDateOrderInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
@@ -81,7 +84,7 @@ public class LvAcceptAdapter extends BaseAdapter {
         viewholder.tv_call_phone.setBackgroundResource(R.drawable.bg_round_green);
         if ("0".equals(mKind)) {
             viewholder.tv_call_phone.setVisibility(View.VISIBLE);
-            if ("rob".equals(mType)) {
+            if ("rob".equals(mType)) {//抢单
                 final PeiSInfo.OrderazlistBean bean = (PeiSInfo.OrderazlistBean) mList.get(i);
                 viewholder.tv_num.setText(bean.getOrderno());
                 viewholder.tv_address.setText(bean.getFDeliveryAddress());
@@ -91,8 +94,8 @@ public class LvAcceptAdapter extends BaseAdapter {
                 viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //接单
-                        acceptThisOrder(((PeiSInfo.OrderazlistBean) mList.get(i)).getId(), i);
+                        //抢单
+                        robOrder(i);
                     }
                 });
                 //打电话
@@ -107,7 +110,7 @@ public class LvAcceptAdapter extends BaseAdapter {
                         ShowCallUtil.showCallDialog(mContext, phone);
                     }
                 });
-            } else {
+            } else {//配送分配排单
                 final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
                 viewholder.tv_num.setText(bean.getForderno());
                 viewholder.tv_address.setText(bean.getFaddress());
@@ -118,7 +121,7 @@ public class LvAcceptAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         //接单
-                        acceptThisOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
+                        acceptPsOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
                     }
                 });
                 //打电话
@@ -134,21 +137,37 @@ public class LvAcceptAdapter extends BaseAdapter {
                     }
                 });
             }
-        } else {
+        } else {//安装、配送
             viewholder.tv_call_phone.setVisibility(View.GONE);
-            //            final InstAndRepInfo info = (InstAndRepInfo) mList.get(i);
-            //            viewholder.tv_num.setText(info.getForderno());
-            //            viewholder.tv_address.setText(info.getFaddress());
-            //            viewholder.tv_cont.setText(info.getFpeople());
-            //            viewholder.tv_contPhone.setText(info.getFtel());
-            //            viewholder.tv_warn.setText(info.getSpecial_note());
-            //            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-            //                @Override
-            //                public void onClick(View view) {
-            //                    //接单
-            //                    acceptOrder02(info.getId(), i);
-            //                }
-            //            });
+            if ("rob".equals(mType)) {
+                final InstAndRepInfo.OrderazlistBean orderInfo = (InstAndRepInfo.OrderazlistBean) mList.get(i);
+                viewholder.tv_num.setText(orderInfo.getOrderno());
+                viewholder.tv_address.setText(orderInfo.getFDeliveryAddress());
+                viewholder.tv_cont.setText(orderInfo.getFcontact());
+                viewholder.tv_contPhone.setText(orderInfo.getFmobile());
+                viewholder.tv_warn.setText(orderInfo.getNote());
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //抢单
+                        robOrder(i);
+                    }
+                });
+            } else {//排单
+                final InstAndRepInfo.ApplyBean applyInfo = (InstAndRepInfo.ApplyBean) mList.get(i);
+                viewholder.tv_num.setText(applyInfo.getForderno());
+                viewholder.tv_address.setText(applyInfo.getFaddress());
+                viewholder.tv_cont.setText(applyInfo.getFpeople());
+                viewholder.tv_contPhone.setText(applyInfo.getFtel());
+                viewholder.tv_warn.setText(applyInfo.getSpecial_note());
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //接单
+                        acceptOrder02(((InstAndRepInfo.OrderazlistBean) mList.get(i)).getId(), i);
+                    }
+                });
+            }
         }
         return view;
     }
@@ -158,13 +177,98 @@ public class LvAcceptAdapter extends BaseAdapter {
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void acceptOrder02(String orderID, final int item) {
-        //TODO:
+    private void robOrder(final int item) {
+        String orderID;
+        String type;
+        String status;
+        if ("0".equals(mKind)) {
+            PeiSInfo.OrderazlistBean orderazlistBean = (PeiSInfo.OrderazlistBean) mList.get(item);
+            orderID = orderazlistBean.getId();
+            type = "配送单";
+            status = orderazlistBean.getBpmstatus();
+        } else if ("1".equals(mKind)) {
+            InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
+            orderID = bean.getId();
+            type = "安装单";
+            status = bean.getPsstatus();
+        } else {
+            InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
+            orderID = bean.getId();
+            type = "维修单";
+            status = bean.getBpmstatus();
+        }
+        ProgressDialogUtil.startShow(mContext, "正在抢单...");
+        String changeOrderUrl = NetConfig.UPDATEORDER;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        params.put("ordertype", type);
+        params.put("username", MyApplication.userName);
+        params.put("status", status);
+        HttpOkhUtils.getInstance().doGetWithParams(changeOrderUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(mContext, "网络连接错误");
+            }
 
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(mContext, "抢单失败，网络错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                UpDateOrderInfo upDateOrderInfo = gson.fromJson(resbody, UpDateOrderInfo.class);
+                int result = upDateOrderInfo.getResult();
+                if (result == 1) {
+                    ToastUtils.showToast(mContext, "抢单成功");
+                    mList.remove(item);
+                    notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(mContext, "抢单失败");
+                }
+            }
+        });
+    }
+
+
+    private void acceptOrder02(String orderID, final int item) {
+        ProgressDialogUtil.startShow(mContext, "正在抢单...");
+        String yySUrl = NetConfig.YUYUE;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        params.setUseJsonStreamer(true);
+        HttpOkhUtils.getInstance().doPost(yySUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(mContext, "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(mContext, "抢单失败，网络错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                UpDateOrderInfo upDateOrderInfo = gson.fromJson(resbody, UpDateOrderInfo.class);
+                int result = upDateOrderInfo.getResult();
+                if (result == 1) {
+                    ToastUtils.showToast(mContext, "接单成功");
+                    mList.remove(item);
+                    notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(mContext, "接单失败");
+                }
+            }
+        });
     }
 
     //接单
-    private void acceptThisOrder(String orderID, final int item) {
+    private void acceptPsOrder(String orderID, final int item) {
         if (null == orderID || "".equals(orderID)) {
             ToastUtils.showToast(mContext, "该订单没有获取到id");
             return;
@@ -185,7 +289,7 @@ public class LvAcceptAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    ToastUtils.showToast(mContext, code + "网络错误");
                     return;
                 }
                 Gson gson = new Gson();

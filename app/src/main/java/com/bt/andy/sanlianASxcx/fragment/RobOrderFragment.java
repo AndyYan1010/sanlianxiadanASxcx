@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvAcceptAdapter;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,12 @@ import java.util.List;
  */
 
 public class RobOrderFragment extends Fragment {
-    private View            mRootView;
-    private ListView        lv_tour;
-    private LvAcceptAdapter tourPlanAdapter;
-    private List            mData;
-    private String          mKind;
+    private View               mRootView;
+    private SmartRefreshLayout smt_refresh;
+    private ListView           lv_tour;
+    private LvAcceptAdapter    tourPlanAdapter;
+    private List               mData;
+    private String             mKind;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,12 +44,16 @@ public class RobOrderFragment extends Fragment {
     }
 
     private void initView() {
+        smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
+        smt_refresh.setEnableRefresh(false);
+        smt_refresh.setEnableLoadMore(false);
+        mKind = getActivity().getIntent().getStringExtra("kind");
     }
 
     private void initData() {
-        mKind = getActivity().getIntent().getStringExtra("kind");
-        mData = new ArrayList();
+        if (null == mData)
+            mData = new ArrayList();
         tourPlanAdapter = new LvAcceptAdapter(getContext(), mData, mKind, "rob");
         lv_tour.setAdapter(tourPlanAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {

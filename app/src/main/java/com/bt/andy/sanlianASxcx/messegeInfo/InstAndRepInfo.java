@@ -24,7 +24,7 @@ public class InstAndRepInfo {
      * username : 张三
      */
 
-    private int result;
+    private int                   result;
     private String                password;
     private String                ftype;
     private String                fopenid;
@@ -319,7 +319,7 @@ public class InstAndRepInfo {
         private Object fshifu;
         private Object fcontent;
         private String special_note;
-        private Object forderno;
+        private String forderno;
         private Object fshifuid;
         private Object fdate;
         private Object azfdate;
@@ -458,11 +458,11 @@ public class InstAndRepInfo {
             this.special_note = special_note;
         }
 
-        public Object getForderno() {
+        public String getForderno() {
             return forderno;
         }
 
-        public void setForderno(Object forderno) {
+        public void setForderno(String forderno) {
             this.forderno = forderno;
         }
 

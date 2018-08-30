@@ -15,6 +15,7 @@ import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvComplAdapter;
+import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
@@ -24,6 +25,9 @@ import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,7 +75,7 @@ public class ComplFragment extends Fragment {
 
     private void initData() {
         mData = new ArrayList();
-        tourPlanAdapter = new LvComplAdapter(getContext(), mData);
+        tourPlanAdapter = new LvComplAdapter(getContext(), mData,mKind);
         lv_tour.setAdapter(tourPlanAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -124,11 +128,79 @@ public class ComplFragment extends Fragment {
     }
 
     private void getWxComp() {
+        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
+        mData.clear();
+        String fwwcwxUrl = NetConfig.FWWCWX;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", MyApplication.userID);
+        HttpOkhUtils.getInstance().doGetWithParams(fwwcwxUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                ToastUtils.showToast(getContext(), "网络连接错误");
+            }
 
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                if (code != 200) {
+                    ToastUtils.showToast(getContext(), code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                try {
+                    JSONArray jsonArray = new JSONArray(resbody);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
+                        mData.add(anzYYInfo);
+                    }
+                    tourPlanAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtils.showToast(getContext(), "数据获取失败");
+                }
+            }
+        });
     }
 
     private void getAzComp() {
+        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
+        mData.clear();
+        String fwwcUrl = NetConfig.FWWC;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", MyApplication.userID);
+        HttpOkhUtils.getInstance().doGetWithParams(fwwcUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                ToastUtils.showToast(getContext(), "网络连接错误");
+            }
 
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                smt_refresh.finishRefresh();
+                if (code != 200) {
+                    ToastUtils.showToast(getContext(), code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                try {
+                    JSONArray jsonArray = new JSONArray(resbody);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
+                        mData.add(anzYYInfo);
+                    }
+                    tourPlanAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtils.showToast(getContext(), "数据获取失败");
+                }
+            }
+        });
     }
 
     private void getPeisComp() {

@@ -91,7 +91,7 @@ public class LvOrderAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     //提货
-                    getTheGoods(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
+                    getPsGoods(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
                 }
             });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +103,7 @@ public class LvOrderAdapter extends BaseAdapter {
                         ToastUtils.showToast(mContext, "该订单没有留存电话");
                         return;
                     }
-                    ShowCallUtil.showCallDialog(mContext, ftel,orderID);
+                    ShowCallUtil.showCallDialog(mContext, ftel);
                 }
             });
         } else {
@@ -119,7 +119,7 @@ public class LvOrderAdapter extends BaseAdapter {
                 viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //TODO:安装预约
+                        //TODO:安装扫码
 
                     }
                 });
@@ -133,7 +133,7 @@ public class LvOrderAdapter extends BaseAdapter {
                             ToastUtils.showToast(mContext, "该订单没有留存电话");
                             return;
                         }
-                        ShowCallUtil.showCallDialog(mContext, phoneNum,orderID);
+                        ShowCallUtil.showCallDialog(mContext, phoneNum, orderID);
                     }
                 });
             } else {//维修
@@ -147,7 +147,7 @@ public class LvOrderAdapter extends BaseAdapter {
                             ToastUtils.showToast(mContext, "该订单没有留存电话");
                             return;
                         }
-                        ShowCallUtil.showCallDialog(mContext, phoneNum,"");
+                        ShowCallUtil.showCallDialog(mContext, phoneNum, "");
                     }
                 });
             }
@@ -160,7 +160,7 @@ public class LvOrderAdapter extends BaseAdapter {
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void getTheGoods(String orderID, final int item) {
+    private void getPsGoods(String orderID, final int item) {
         ProgressDialogUtil.startShow(mContext, "正在查询，请稍后...");
         String pswcSUrl = NetConfig.PSWC1;
         RequestParamsFM params = new RequestParamsFM();
@@ -177,7 +177,7 @@ public class LvOrderAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    ToastUtils.showToast(mContext, code + "网络错误");
                     return;
                 }
                 Gson gson = new Gson();

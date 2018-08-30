@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.R;
+import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 
 import java.util.List;
@@ -23,10 +24,12 @@ import java.util.List;
 public class LvComplAdapter extends BaseAdapter {
     private Context mContext;
     private List    mList;
+    private String  mKind;
 
-    public LvComplAdapter(Context context, List list) {
+    public LvComplAdapter(Context context, List list, String kind) {
         this.mContext = context;
         this.mList = list;
+        this.mKind = kind;
     }
 
     @Override
@@ -67,12 +70,22 @@ public class LvComplAdapter extends BaseAdapter {
         viewholder.tv_accept.setVisibility(View.GONE);
         viewholder.tv_call_phone.setVisibility(View.GONE);
         viewholder.tv_compl.setVisibility(View.GONE);
-        PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-        viewholder.tv_num.setText(bean.getForderno());
-        viewholder.tv_address.setText(bean.getFaddress());
-        viewholder.tv_cont.setText(bean.getFpeople());
-        viewholder.tv_contPhone.setText(bean.getFtel());
-        viewholder.tv_warn.setText(bean.getSpecial_note());
+        if ("0".equals(mKind)) {
+            PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
+            viewholder.tv_num.setText(bean.getForderno());
+            viewholder.tv_address.setText(bean.getFaddress());
+            viewholder.tv_cont.setText(bean.getFpeople());
+            viewholder.tv_contPhone.setText(bean.getFtel());
+            viewholder.tv_warn.setText(bean.getSpecial_note());
+        } else {
+            AnzYuyueInfo info = (AnzYuyueInfo) mList.get(i);
+            viewholder.tv_num.setText(info.getForderno());
+            viewholder.tv_address.setText(info.getFaddress());
+            viewholder.tv_cont.setText(info.getFpeople());
+            viewholder.tv_contPhone.setText(info.getFtel());
+            viewholder.tv_warn.setText(info.getSpecial_note());
+        }
+
         return view;
     }
 

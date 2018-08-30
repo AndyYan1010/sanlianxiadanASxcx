@@ -74,7 +74,6 @@ public class ServiceFragment extends Fragment {
     }
 
     private void initData() {
-
         mData = new ArrayList();
         tourPlanAdapter = new LvServiceAdapter(getContext(), mData,mKind);
         lv_tour.setAdapter(tourPlanAdapter);
@@ -162,7 +161,7 @@ public class ServiceFragment extends Fragment {
                     tourPlanAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ToastUtils.showToast(getContext(), "数据解析失败");
+                    ToastUtils.showToast(getContext(), "数据获取失败");
                 }
             }
         });
@@ -200,20 +199,8 @@ public class ServiceFragment extends Fragment {
                     tourPlanAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ToastUtils.showToast(getContext(), "数据解析失败");
+                    ToastUtils.showToast(getContext(), "数据获取失败");
                 }
-
-                //                PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
-                //                int result = peiSInfo.getResult();
-                //                if (result == 1) {
-                //                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
-                //                    for (PeiSInfo.ApplyBean bean : apply) {
-                //                        mData.add(bean);
-                //                    }
-                //                    tourPlanAdapter.notifyDataSetChanged();
-                //                } else {
-                //                    ToastUtils.showToast(getContext(), "获取配送单失败");
-                //                }
             }
         });
     }

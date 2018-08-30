@@ -130,6 +130,13 @@ public class LvServiceAdapter extends BaseAdapter {
             viewholder.tv_cont.setText(info.getFpeople());
             viewholder.tv_contPhone.setText(info.getFtel());
             viewholder.tv_warn.setText(info.getSpecial_note());
+            viewholder.tv_compl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //TODO:确认完成
+                    complAzOrder(i);
+                }
+            });
             viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -160,6 +167,10 @@ public class LvServiceAdapter extends BaseAdapter {
     private class MyViewholder {
         View     view_line;
         TextView tv_accept, tv_call_phone, tv_compl, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
+    }
+
+    private void complAzOrder(int item) {
+
     }
 
     private void upPic(String orderID) {

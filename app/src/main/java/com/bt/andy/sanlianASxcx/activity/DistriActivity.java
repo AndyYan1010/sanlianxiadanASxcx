@@ -68,6 +68,7 @@ public class DistriActivity extends BaseActivity {
         myPagerAdapter.setFragments(fragments);
         // 给ViewPager设置适配器
         mView_pager.setAdapter(myPagerAdapter);
+        mView_pager.setOffscreenPageLimit(4);
         //设置viewpager不可滑动
         //mView_pager_space.setCanScroll(false);
         //tablayout关联tablayout和viewpager实现联动
