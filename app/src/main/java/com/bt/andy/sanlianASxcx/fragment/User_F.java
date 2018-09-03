@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.LoginActivity;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
@@ -28,7 +30,7 @@ import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 public class User_F extends Fragment implements View.OnClickListener {
     private View           mRootView;
     private ImageView      mImg_head;//头像
-    private View           mTv_number;//账号
+    private TextView       mTv_number;//账号
     private RelativeLayout mRelative_set;//设置条目
     private RelativeLayout mRelative_msg;//消息
     private RelativeLayout mRelative_exit;//退出
@@ -50,6 +52,7 @@ public class User_F extends Fragment implements View.OnClickListener {
     }
 
     private void initData() {
+        mTv_number.setText("账号："+MyApplication.userName);
         mRelative_set.setOnClickListener(this);
         mRelative_msg.setOnClickListener(this);
         mRelative_exit.setOnClickListener(this);

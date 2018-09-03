@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.WindowManager;
 
 import com.bt.andy.sanlianASxcx.activity.LoginActivity;
 
@@ -27,6 +28,7 @@ public class BaseActivity extends AppCompatActivity {
         }
         MyApplication.listActivity.add(this);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     protected void protectApp() {
         Intent intent = new Intent(this, LoginActivity.class);

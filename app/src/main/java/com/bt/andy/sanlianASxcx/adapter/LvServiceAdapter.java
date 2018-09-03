@@ -109,7 +109,7 @@ public class LvServiceAdapter extends BaseAdapter {
                         return;
                     }
                     //上传图片
-                    upPic(orderID);
+                    upPic(orderID, ((PeiSInfo.ApplyBean) mList.get(i)).getFbstatus());
                 }
             });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +146,7 @@ public class LvServiceAdapter extends BaseAdapter {
                         return;
                     }
                     //上传图片
-                    upPic(orderID);
+                    upPic(orderID, ((AnzYuyueInfo) mList.get(i)).getFbstatus());
                 }
             });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
@@ -169,14 +169,47 @@ public class LvServiceAdapter extends BaseAdapter {
         TextView tv_accept, tv_call_phone, tv_compl, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void complAzOrder(int item) {
+    private void complAzOrder(final int item) {
+        String orderID = ((AnzYuyueInfo) mList.get(item)).getId();
+        String fbstatus = ((AnzYuyueInfo) mList.get(item)).getFbstatus();
+        ProgressDialogUtil.startShow(mContext, "正在提交，请稍后...");
+        String wcUrl = NetConfig.WANCHENG;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        params.put("status", fbstatus);
+        HttpOkhUtils.getInstance().doPost(wcUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(mContext, "网络连接错误");
+            }
 
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
+                int result = peiSInfo.getResult();
+                if (result == 1) {
+                    ToastUtils.showToast(mContext, "提交成功");
+                    mList.remove(item);
+                    notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(mContext, "提交失败");
+                }
+            }
+        });
     }
 
-    private void upPic(String orderID) {
+    private void upPic(String orderID, String times) {
         //TODO:还需要哪些提交信息?
         Intent intent = new Intent(mContext, UploadPicActivity.class);
         intent.putExtra("orderID", orderID);
+        intent.putExtra("subtimes", times);
         mContext.startActivity(intent);
     }
 

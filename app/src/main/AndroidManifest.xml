@@ -64,6 +64,7 @@
         <activity android:name=".activity.InstallActivity"/>
         <activity android:name=".activity.RepairActivity"/>
         <activity android:name=".activity.UploadPicActivity"/>
+        <activity android:name=".activity.SaomiaoUIActivity"/>
 
 
         <!-- Required SDK 核心功能-->
@@ -84,8 +85,7 @@
         <provider
             android:name="cn.jpush.android.service.DownloadProvider"
             android:authorities="com.bt.andy.sanlianASxcx.DownloadProvider"
-            android:exported="true"
-            />
+            android:exported="true"/>
 
         <!-- Required SDK核心功能-->
         <receiver
@@ -144,6 +144,23 @@
         <meta-data
             android:name="JPUSH_APPKEY"
             android:value="4ab518039a4729f114822dc0"/>
+
+        <!--自定义接收推送消息-->
+        <!--<receiver-->
+            <!--android:name=".util.MyJPushDefineReceIver"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="cn.jpush.android.intent.REGISTRATION"/>-->
+                <!--<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>-->
+                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>-->
+                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>-->
+                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION"/>-->
+                <!--<action android:name="cn.jpush.android.intent.CONNECTION"/>-->
+
+                <!--<category android:name="com.bt.andy.sanlianASxcx"/>-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
     </application>
 
 </manifest>

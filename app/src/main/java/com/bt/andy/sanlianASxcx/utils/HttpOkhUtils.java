@@ -2,6 +2,7 @@ package com.bt.andy.sanlianASxcx.utils;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,6 +12,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -91,6 +93,27 @@ public class HttpOkhUtils {
             }
             requestBody = builder.build();
         }
+
+        Request request = new Request.Builder().url(url).post(requestBody).build();
+        client.newCall(request).enqueue(new StringCallBack(request, httpCallBack));
+    }
+
+    public void uploadFile(String url, RequestParamsFM bean, String fileKey, File file, HttpCallBack httpCallBack) {
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        //        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM).build();
+        if (null != bean) {
+            Set<String> set = bean.keySet();
+            for (String key : set) {
+                String value = bean.get(key).toString();
+                builder.addFormDataPart(key, value);
+            }
+        }
+        builder.addFormDataPart(fileKey, file.getName(), fileBody);
+        RequestBody requestBody = builder.build();
+        //                .setType(MultipartBody.FORM)
+        //                .addFormDataPart("image", "test.jpg", fileBody)
+        //                .build();
 
         Request request = new Request.Builder().url(url).post(requestBody).build();
         client.newCall(request).enqueue(new StringCallBack(request, httpCallBack));

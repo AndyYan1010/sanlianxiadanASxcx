@@ -2,8 +2,11 @@ package com.bt.andy.sanlianASxcx;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.IntentFilter;
 
+import com.bt.andy.sanlianASxcx.util.MyJPushDefineReceIver;
 import com.bt.andy.sanlianASxcx.utils.ExceptionUtil;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 import java.util.ArrayList;
 
@@ -28,8 +31,25 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ZXingLibrary.initDisplayOpinion(this);
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        //自定义推送消息
+        getJPushInfo();
+    }
+
+    private void getJPushInfo() {
+        //动态注册
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("cn.jpush.android.intent.REGISTRATION");
+        intentFilter.addAction("cn.jpush.android.intent.MESSAGE_RECEIVED");
+        intentFilter.addAction("cn.jpush.android.intent.NOTIFICATION_RECEIVED");
+        intentFilter.addAction("cn.jpush.android.intent.NOTIFICATION_OPENED");
+        intentFilter.addAction("cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION");
+        intentFilter.addAction("cn.jpush.android.intent.CONNECTION");
+        MyJPushDefineReceIver jPushDefineReceIver = new MyJPushDefineReceIver(getApplicationContext());
+        jPushDefineReceIver.initSoundPool();
+        registerReceiver(jPushDefineReceIver, intentFilter);
     }
 
     public static void exit() {

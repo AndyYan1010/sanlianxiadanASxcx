@@ -1,5 +1,6 @@
 package com.bt.andy.sanlianASxcx.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import com.bt.andy.sanlianASxcx.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @创建者 AndyYan
@@ -24,11 +26,14 @@ import java.util.ArrayList;
 
 public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder> {
     private ArrayList<Bitmap> mData;
+    private List<String>      mFileList;
     private Context           mContext;
+    private int IMAGE = 10086;
 
-    public AddPicAdapter(Context context, ArrayList<Bitmap> data) {
+    public AddPicAdapter(Context context, ArrayList<Bitmap> data, List<String> fileList) {
         this.mContext = context;
         this.mData = data;
+        this.mFileList = fileList;
     }
 
     @Override
@@ -41,7 +46,7 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         if (position == 0) {
             //第一个条目不显示删除按键
             holder.img_delet.setVisibility(View.GONE);
@@ -52,12 +57,21 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
                 public void onClick(View v) {
                     //调用相册
                     Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    //                    startActivityForResult(intent, IMAGE);
+                    ((Activity) mContext).startActivityForResult(intent, IMAGE);
                 }
             });
         } else {
+            holder.img_delet.setVisibility(View.VISIBLE);
             holder.img_add_photo.setImageBitmap(mData.get(position));
         }
+        holder.img_delet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mData.remove(position);
+                mFileList.remove(position - 1);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

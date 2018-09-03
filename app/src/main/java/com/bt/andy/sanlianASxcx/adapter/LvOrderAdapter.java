@@ -110,19 +110,13 @@ public class LvOrderAdapter extends BaseAdapter {
             viewholder.tv_accept.setText("扫码");
             viewholder.tv_call_phone.setText("打电话");
             if ("1".equals(mKind)) {//安装
-                AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
+                final AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
                 viewholder.tv_num.setText(anzYuyueInfo.getForderno());
                 viewholder.tv_address.setText(anzYuyueInfo.getFaddress());
                 viewholder.tv_cont.setText(anzYuyueInfo.getFpeople());
                 viewholder.tv_contPhone.setText(anzYuyueInfo.getFtel());
                 viewholder.tv_warn.setText(anzYuyueInfo.getSpecial_note());
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //TODO:安装扫码
-
-                    }
-                });
+                String fbstatus = anzYuyueInfo.getFbstatus();
                 viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -136,8 +130,26 @@ public class LvOrderAdapter extends BaseAdapter {
                         ShowCallUtil.showCallDialog(mContext, phoneNum, orderID);
                     }
                 });
+                if ("4".equals(fbstatus)) {//打过电话
+                    viewholder.tv_call_phone.setText("预约");
+                    viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //预约更改成上门服务状态
+                            anzUpToService(anzYuyueInfo.getId(),i);
+                        }
+                    });
+                }
+                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO:安装扫码
+
+                    }
+                });
             } else {//维修
                 //TODO:
+
                 viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -158,6 +170,40 @@ public class LvOrderAdapter extends BaseAdapter {
     private class MyViewholder {
         View     view_line;
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
+    }
+
+    private void anzUpToService(String orderID, final int item) {
+        ProgressDialogUtil.startShow(mContext, "正在提交，请稍后...");
+        String updatetype1Url = NetConfig.UPDATETYPE1;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        HttpOkhUtils.getInstance().doGetWithParams(updatetype1Url, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(mContext, "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
+                int result = peiSInfo.getResult();
+                if (result == 1) {
+                    ToastUtils.showToast(mContext, "预约成功");
+                    mList.remove(item);
+                    notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(mContext, "预约失败");
+                }
+            }
+        });
+
     }
 
     private void getPsGoods(String orderID, final int item) {

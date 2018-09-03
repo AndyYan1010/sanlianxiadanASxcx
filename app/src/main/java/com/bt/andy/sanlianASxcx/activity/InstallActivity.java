@@ -3,6 +3,8 @@ package com.bt.andy.sanlianASxcx.activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.BaseActivity;
@@ -25,7 +27,8 @@ import java.util.ArrayList;
  * @更新描述 ${TODO}
  */
 
-public class InstallActivity extends BaseActivity {
+public class InstallActivity extends BaseActivity implements View.OnClickListener {
+    private ImageView        img_back;
     private TextView         mTv_title;
     private TabLayout        mTablayout;//导航标签
     private MyFixedViewpager mView_pager;//自我viewpager可实现禁止滑动
@@ -40,12 +43,15 @@ public class InstallActivity extends BaseActivity {
     }
 
     private void initView() {
+        img_back = (ImageView) findViewById(R.id.img_back);
         mTv_title = findViewById(R.id.tv_title);
         mTablayout = findViewById(R.id.tablayout);
         mView_pager = findViewById(R.id.view_pager);
     }
 
     private void initData() {
+        img_back.setVisibility(View.VISIBLE);
+        img_back.setOnClickListener(this);
         mTv_title.setText("安装");
         // 创建一个集合,装填Fragment
         ArrayList<Fragment> fragments = new ArrayList<>();
@@ -74,6 +80,15 @@ public class InstallActivity extends BaseActivity {
         mTablayout.setupWithViewPager(mView_pager);
         for (int i = 0; i < conts.length; i++) {
             mTablayout.getTabAt(i).setText(conts[i]);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
         }
     }
 }

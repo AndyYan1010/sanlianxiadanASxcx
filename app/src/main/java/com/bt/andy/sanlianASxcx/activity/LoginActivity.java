@@ -73,6 +73,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ToastUtils.showToast(LoginActivity.this, "请输入密码");
                     return;
                 }
+                //                Intent intent = new Intent(LoginActivity.this, UploadPicActivity.class);
+                //                startActivity(intent);
                 loginToService(name, psd);
                 break;
         }
@@ -95,7 +97,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(LoginActivity.this, code + "网络连接错误");
+                    ToastUtils.showToast(LoginActivity.this, code + "网络错误");
                     return;
                 }
                 Gson gson = new Gson();

@@ -11,7 +11,7 @@ package com.bt.andy.sanlianASxcx;
 
 public class NetConfig {
     //服务器总地址
-    public static String ROOT = "http://192.168.10.125:8081/page/";
+    public static String ROOT = "http://192.168.10.99:8081/page/";
 
     //用户登录
     public static String LOGINURL     = ROOT + "login.do";
@@ -25,31 +25,40 @@ public class NetConfig {
     public static String PSIMAGE      = ROOT + "psimage.do";
 
     //安装
-    //待接单
+    //查询待接单
     public static String SELECTAPPLY = ROOT + "selectapply.do";
-    //待预约
-    public static String DAIYUYUE = ROOT + "daiyuyue.do";
-    //上门服务
-    public static String SMFW = ROOT + "smfw.do";
-    //服务完成
-    public static String FWWC = ROOT + "fwwc.do";
+    //查询待预约
+    public static String DAIYUYUE    = ROOT + "daiyuyue.do";
+    //更改成上门服务
+    public static String UPDATETYPE1 = ROOT + "Updatetype1.do";
+    //查询上门服务
+    public static String SMFW        = ROOT + "smfw.do";
+    //上门服务完成
+    public static String WANCHENG    = ROOT + "wancheng.do";
+    //查询服务完成
+    public static String FWWC        = ROOT + "fwwc.do";
 
 
     //维修
     //待接单
     public static String SELECTAPPLYWX = ROOT + "selectapplywx.do";
     //待预约
-    public static String DAIYUYUEWX = ROOT + "daiyuyuewx.do";
+    public static String DAIYUYUEWX    = ROOT + "daiyuyuewx.do";
     //上门服务
-    public static String SMFWWX = ROOT + "smfwwx.do";
+    public static String SMFWWX        = ROOT + "smfwwx.do";
     //服务完成
-    public static String FWWCWX = ROOT + "fwwcwx.do";
+    public static String FWWCWX        = ROOT + "fwwcwx.do";
 
 
     //抢单订单更改状态
     public static String UPDATEORDER = ROOT + "updateorder.do";
     //分配单接单
-    public static String YUYUE = ROOT + "yuyue.do";
+    public static String YUYUE       = ROOT + "yuyue.do";
     //拨打电话，接口
-    public static String CALL = ROOT + "call.do";
+    public static String CALL        = ROOT + "call.do";
+
+    //提交图片接口1
+    public static String INSERTIMG  = ROOT + "Insertimg.do";
+    //提交图片接口2
+    public static String INSERTIMG1 = ROOT + "Insertimg1.do";
 }
