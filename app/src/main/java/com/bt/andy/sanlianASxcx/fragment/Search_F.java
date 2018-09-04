@@ -8,15 +8,25 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bt.andy.sanlianASxcx.MyApplication;
+import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvSearchOrderAdapter;
+import com.bt.andy.sanlianASxcx.messegeInfo.SearchDataOrderInfo;
+import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
+import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
+import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 import com.bt.andy.sanlianASxcx.viewmodle.CustomDatePicker;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Request;
 
 /**
  * @创建者 AndyYan
@@ -32,8 +42,9 @@ public class Search_F extends Fragment implements View.OnClickListener {
     private TextView mTv_title;
     private TextView tv_search;//查询
     private TextView tv_start_time, tv_end_time;
-    private ListView lv_search;
-    private List     mData;
+    private ListView                                   lv_search;
+    private List<SearchDataOrderInfo.OredrpaylistBean> mData;
+    private LvSearchOrderAdapter                       orderAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +69,7 @@ public class Search_F extends Fragment implements View.OnClickListener {
         getDate();
 
         mData = new ArrayList();
-        LvSearchOrderAdapter orderAdapter = new LvSearchOrderAdapter(getContext(), mData);
+        orderAdapter = new LvSearchOrderAdapter(getContext(), mData);
         lv_search.setAdapter(orderAdapter);
         tv_search.setOnClickListener(this);
     }
@@ -107,8 +118,46 @@ public class Search_F extends Fragment implements View.OnClickListener {
                     ToastUtils.showToast(getContext(), "请选择结束日期");
                     return;
                 }
+                //根据时间段，查询订单
+                getOrderByTime(st_time, end_time);
                 break;
         }
+    }
+
+    private void getOrderByTime(String st_time, String end_time) {
+        mData.clear();
+        ProgressDialogUtil.startShow(getContext(), "正在查询");
+        String wcdUrl = NetConfig.WANCHENGDATE;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("begindate", st_time);
+        params.put("enddate", end_time);
+        params.put("shifuid", MyApplication.userID);
+        HttpOkhUtils.getInstance().doGetWithParams(wcdUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(getContext(), "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(getContext(), "网络错误");
+                    return;
+                }
+                Gson gson = new Gson();
+                SearchDataOrderInfo searchDataOrderInfo = gson.fromJson(resbody, SearchDataOrderInfo.class);
+                int result = searchDataOrderInfo.getResult();
+                if (result == 1) {
+                    List<SearchDataOrderInfo.OredrpaylistBean> oredrpaylist = searchDataOrderInfo.getOredrpaylist();
+                    mData.addAll(oredrpaylist);
+                    orderAdapter.notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(getContext(), "网络错误");
+                }
+            }
+        });
     }
 
     //获取当前日期

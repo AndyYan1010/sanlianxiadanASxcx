@@ -67,11 +67,13 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private String markNote;
     private String orderID;//订单id
     private String subTimes;
+    private String mKind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_pic);
+        mKind = getIntent().getStringExtra("kind");
         orderID = getIntent().getStringExtra("orderID");
         subTimes = getIntent().getStringExtra("subtimes");
         getView();

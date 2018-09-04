@@ -61,4 +61,7 @@ public class NetConfig {
     public static String INSERTIMG  = ROOT + "Insertimg.do";
     //提交图片接口2
     public static String INSERTIMG1 = ROOT + "Insertimg1.do";
+
+    //所有订单查询
+    public static String WANCHENGDATE = ROOT + "wanchengdate.do";
 }

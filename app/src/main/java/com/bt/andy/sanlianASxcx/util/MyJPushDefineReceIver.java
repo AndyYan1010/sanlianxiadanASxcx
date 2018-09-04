@@ -150,7 +150,6 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
                 .setPriority(Notification.PRIORITY_MAX)
                 .build();
         notificationManager.notify(markExamine, notification);
-
     }
 
     private void openNotification(Context context, Bundle bundle) {

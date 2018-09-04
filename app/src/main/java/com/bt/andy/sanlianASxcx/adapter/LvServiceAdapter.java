@@ -208,6 +208,7 @@ public class LvServiceAdapter extends BaseAdapter {
     private void upPic(String orderID, String times) {
         //TODO:还需要哪些提交信息?
         Intent intent = new Intent(mContext, UploadPicActivity.class);
+        intent.putExtra("kind", mKind);//kind 0配送、1.2安装维修
         intent.putExtra("orderID", orderID);
         intent.putExtra("subtimes", times);
         mContext.startActivity(intent);

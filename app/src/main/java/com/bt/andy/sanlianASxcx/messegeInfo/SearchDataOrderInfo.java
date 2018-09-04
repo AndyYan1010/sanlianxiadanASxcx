@@ -143,10 +143,10 @@ public class SearchDataOrderInfo {
         private String purchase;
         private String pay;
         private String fname1;
-        private int    FPrice;
+        private double FPrice;
         private String fshifuid;
         private String warehouse;
-        private int    FAmount;
+        private double FAmount;
         private String azcost;
         private long   FDate;
         private String othercosts;
@@ -159,6 +159,11 @@ public class SearchDataOrderInfo {
         private int    FUnitID;
         private String status;
         private String logistics_direction;
+        /**
+         * wxcost : 1.0
+         */
+
+        private String wxcost;
 
         public String getFBillNo() {
             return FBillNo;
@@ -384,11 +389,11 @@ public class SearchDataOrderInfo {
             this.fname1 = fname1;
         }
 
-        public int getFPrice() {
+        public double getFPrice() {
             return FPrice;
         }
 
-        public void setFPrice(int FPrice) {
+        public void setFPrice(double FPrice) {
             this.FPrice = FPrice;
         }
 
@@ -408,11 +413,11 @@ public class SearchDataOrderInfo {
             this.warehouse = warehouse;
         }
 
-        public int getFAmount() {
+        public double getFAmount() {
             return FAmount;
         }
 
-        public void setFAmount(int FAmount) {
+        public void setFAmount(double FAmount) {
             this.FAmount = FAmount;
         }
 
@@ -510,6 +515,14 @@ public class SearchDataOrderInfo {
 
         public void setLogistics_direction(String logistics_direction) {
             this.logistics_direction = logistics_direction;
+        }
+
+        public String getWxcost() {
+            return wxcost;
+        }
+
+        public void setWxcost(String wxcost) {
+            this.wxcost = wxcost;
         }
     }
 }

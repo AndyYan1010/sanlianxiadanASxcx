@@ -63,6 +63,7 @@
         android:layout_marginTop="10dp">
 
         <TextView
+            android:id="@+id/tv_bzf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="标准运费"
@@ -87,6 +88,7 @@
         android:layout_marginTop="10dp">
 
         <TextView
+            android:id="@+id/tv_slf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="上楼费"
@@ -111,6 +113,7 @@
         android:layout_marginTop="10dp">
 
         <TextView
+            android:id="@+id/tv_ct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="长途"
@@ -119,6 +122,32 @@
 
         <TextView
             android:id="@+id/tv_long_dis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="--"
+            android:textColor="@color/vm_black_87"
+            android:textSize="16sp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rel_meal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/tv_meal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="餐费"
+            android:textColor="@color/vm_black_87"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_mprice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
