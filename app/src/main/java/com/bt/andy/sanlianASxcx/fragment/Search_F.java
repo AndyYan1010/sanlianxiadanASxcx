@@ -19,6 +19,7 @@ import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 import com.bt.andy.sanlianASxcx.viewmodle.CustomDatePicker;
 import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,10 +39,11 @@ import okhttp3.Request;
  */
 
 public class Search_F extends Fragment implements View.OnClickListener {
-    private View     mRootView;
-    private TextView mTv_title;
-    private TextView tv_search;//查询
-    private TextView tv_start_time, tv_end_time;
+    private View               mRootView;
+    private TextView           mTv_title;
+    private SmartRefreshLayout smt_refresh;
+    private TextView           tv_search;//查询
+    private TextView           tv_start_time, tv_end_time;
     private ListView                                   lv_search;
     private List<SearchDataOrderInfo.OredrpaylistBean> mData;
     private LvSearchOrderAdapter                       orderAdapter;
@@ -56,6 +58,7 @@ public class Search_F extends Fragment implements View.OnClickListener {
 
     private void initView() {
         mTv_title = mRootView.findViewById(R.id.tv_title);
+        smt_refresh = mRootView.findViewById(R.id.smt_refresh);
         tv_start_time = mRootView.findViewById(R.id.tv_start_time);
         tv_end_time = mRootView.findViewById(R.id.tv_end_time);
         tv_search = mRootView.findViewById(R.id.tv_search);
@@ -72,6 +75,8 @@ public class Search_F extends Fragment implements View.OnClickListener {
         orderAdapter = new LvSearchOrderAdapter(getContext(), mData);
         lv_search.setAdapter(orderAdapter);
         tv_search.setOnClickListener(this);
+        smt_refresh.setEnableLoadMore(false);
+        smt_refresh.setEnableRefresh(false);
     }
 
     @Override

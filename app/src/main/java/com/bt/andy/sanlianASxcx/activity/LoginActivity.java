@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.bt.andy.sanlianASxcx.BaseActivity;
@@ -37,9 +39,10 @@ import okhttp3.Request;
  */
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
-    private static final int BAIDU_Dingwei_STATE = 100;
     private Button   bt_driver;//司机登录按钮
     private EditText edit_num, edit_psd;
+    private CheckBox ck_remPas;
+    private boolean isRem = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +55,26 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void getView() {
         edit_num = (EditText) findViewById(R.id.edit_num);
         edit_psd = (EditText) findViewById(R.id.edit_psd);
+        ck_remPas = (CheckBox) findViewById(R.id.ck_remPas);
         bt_driver = (Button) findViewById(R.id.bt_driver);
     }
 
     private void setData() {
+        Boolean isRemem = SpUtils.getBoolean(LoginActivity.this, "isRem", false);
+        if (isRemem) {
+            isRem = true;
+            ck_remPas.setChecked(true);
+            String name = SpUtils.getString(LoginActivity.this, "name");
+            String psd = SpUtils.getString(LoginActivity.this, "psd");
+            edit_num.setText(name);
+            edit_psd.setText(psd);
+        }
+        ck_remPas.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isRem = b;
+            }
+        });
         bt_driver.setOnClickListener(this);
     }
 
@@ -73,10 +92,19 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ToastUtils.showToast(LoginActivity.this, "请输入密码");
                     return;
                 }
-                //                Intent intent = new Intent(LoginActivity.this, UploadPicActivity.class);
-                //                startActivity(intent);
+                //是否记住账号密码
+                isNeedRem(name, psd);
+                //登录
                 loginToService(name, psd);
                 break;
+        }
+    }
+
+    private void isNeedRem(String name, String psd) {
+        SpUtils.putBoolean(LoginActivity.this, "isRem", isRem);
+        if (isRem) {
+            SpUtils.putString(LoginActivity.this, "name", name);
+            SpUtils.putString(LoginActivity.this, "psd", psd);
         }
     }
 

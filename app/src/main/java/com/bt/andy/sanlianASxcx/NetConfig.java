@@ -11,7 +11,8 @@ package com.bt.andy.sanlianASxcx;
 
 public class NetConfig {
     //服务器总地址
-    public static String ROOT = "http://192.168.10.99:8081/page/";
+//    public static String ROOT = "http://192.168.10.99:8081/page/";
+    public static String ROOT = "https://wxgzh.0746dq.com/slpdJK/page/";
 
     //用户登录
     public static String LOGINURL     = ROOT + "login.do";
@@ -64,4 +65,6 @@ public class NetConfig {
 
     //所有订单查询
     public static String WANCHENGDATE = ROOT + "wanchengdate.do";
+    //签到
+    public static String SHANGMEN = ROOT + "shangmen.do";
 }

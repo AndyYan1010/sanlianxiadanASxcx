@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.LoginActivity;
+import com.bt.andy.sanlianASxcx.utils.SpUtils;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 
 /**
@@ -52,7 +53,7 @@ public class User_F extends Fragment implements View.OnClickListener {
     }
 
     private void initData() {
-        mTv_number.setText("账号："+MyApplication.userName);
+        mTv_number.setText("账号：" + MyApplication.userName);
         mRelative_set.setOnClickListener(this);
         mRelative_msg.setOnClickListener(this);
         mRelative_exit.setOnClickListener(this);
@@ -81,6 +82,7 @@ public class User_F extends Fragment implements View.OnClickListener {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                SpUtils.putBoolean(getContext(), "isRem", false);
                 Intent intent = new Intent();
                 intent.setClass(getContext(), LoginActivity.class);
                 startActivity(intent);

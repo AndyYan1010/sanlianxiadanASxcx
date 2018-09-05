@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,11 +64,13 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private int IMAGE                              = 10086;//获取图片地址，请求值
     private int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;//申请照相机权限结果
     private int REQUEST_CODE                       = 1002;//接收扫描结果
-    private String scanCode;
-    private String markNote;
-    private String orderID;//订单id
-    private String subTimes;
-    private String mKind;
+    private String         scanCode;
+    private String         markNote;
+    private String         orderID;//订单id
+    private String         subTimes;
+    private String         mKind;
+    private RelativeLayout rel_scan;
+    private TextView       tv_fktt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,8 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private void getView() {
         img_back = (ImageView) findViewById(R.id.img_back);
         tv_title = (TextView) findViewById(R.id.tv_title);
+        rel_scan = (RelativeLayout) findViewById(R.id.rel_scan);
+        tv_fktt = (TextView) findViewById(R.id.tv_fktt);
         et_code = (EditText) findViewById(R.id.et_code);
         et_fback = (EditText) findViewById(R.id.et_fback);
         img_scan = (ImageView) findViewById(R.id.img_scan);
@@ -111,6 +116,12 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         rec_up_photo.setAdapter(mAddAdapter);
         img_scan.setOnClickListener(this);
         bt_submit.setOnClickListener(this);
+        if ("0".equals(mKind)) {
+            rel_scan.setVisibility(View.GONE);
+            et_code.setVisibility(View.GONE);
+            et_fback.setVisibility(View.GONE);
+            tv_fktt.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -125,24 +136,35 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                 scanningCode();
                 break;
             case R.id.bt_submit:
-                String code = String.valueOf(et_code.getText()).trim();
-                String fback = String.valueOf(et_fback.getText()).trim();
-                if ("".equals(code) || "请输入或扫码填入机器二维码".equals(code)) {
-                    ToastUtils.showToast(UploadPicActivity.this, "请输入或扫码填入机器二维码");
-                    return;
-                }
-                if ("".equals(fback) || "请输入服务反馈".equals(fback)) {
-                    ToastUtils.showToast(UploadPicActivity.this, "请输入服务反馈");
-                    return;
-                }
-                scanCode = code;
-                markNote = fback;
-                recordTime = 0;
-                //上传图片
-                for (int i = 0; i < filePathList.size(); i++) {
-                    File file = new File(filePathList.get(i));
-                    if (file != null) {
-                        sendPic(file, i);
+                if ("0".equals(mKind)) {//配送
+                    recordTime = 0;
+                    //上传图片
+                    for (int i = 0; i < filePathList.size(); i++) {
+                        File file = new File(filePathList.get(i));
+                        if (file != null) {
+                            sendPSPic(file, i);
+                        }
+                    }
+                } else {
+                    String code = String.valueOf(et_code.getText()).trim();
+                    String fback = String.valueOf(et_fback.getText()).trim();
+                    if ("".equals(code) || "请输入或扫码填入机器二维码".equals(code)) {
+                        ToastUtils.showToast(UploadPicActivity.this, "请输入或扫码填入机器二维码");
+                        return;
+                    }
+                    if ("".equals(fback) || "请输入服务反馈".equals(fback)) {
+                        ToastUtils.showToast(UploadPicActivity.this, "请输入服务反馈");
+                        return;
+                    }
+                    scanCode = code;
+                    markNote = fback;
+                    recordTime = 0;
+                    //上传图片
+                    for (int i = 0; i < filePathList.size(); i++) {
+                        File file = new File(filePathList.get(i));
+                        if (file != null) {
+                            sendPic(file, i);
+                        }
                     }
                 }
                 break;
@@ -224,6 +246,35 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         mAddAdapter.notifyDataSetChanged();
     }
 
+    private void sendPSPic(File file, final int position) {
+        String upLoadpsPic = NetConfig.PSIMAGE;
+        ProgressDialogUtil.startShow(this, "正在上传");
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("id", orderID);
+        HttpOkhUtils.getInstance().uploadFile(upLoadpsPic, params, "file", file, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(UploadPicActivity.this, "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                if (code != 200) {
+                    ToastUtils.showToast(UploadPicActivity.this, "网络错误");
+                    return;
+                }
+                if ("1".equals(resbody)) {
+                    ToastUtils.showToast(UploadPicActivity.this, "图片" + (position + 1) + "上传成功");
+                    recordTime++;
+                    if (recordTime == filePathList.size()) {
+                        ProgressDialogUtil.hideDialog();
+                        finish();
+                    }
+                }
+            }
+        });
+    }
 
     private void sendPic(File file, final int position) {
         String upLoadPic = NetConfig.INSERTIMG;
