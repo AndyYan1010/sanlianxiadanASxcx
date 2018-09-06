@@ -231,8 +231,7 @@ public class LvAcceptAdapter extends BaseAdapter {
             }
         });
     }
-
-
+    
     private void acceptOrder02(String orderID, final int item) {
         ProgressDialogUtil.startShow(mContext, "正在抢单...");
         String yySUrl = NetConfig.YUYUE;
@@ -250,7 +249,7 @@ public class LvAcceptAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, "抢单失败，网络错误");
+                    ToastUtils.showToast(mContext, "网络连接错误");
                     return;
                 }
                 Gson gson = new Gson();

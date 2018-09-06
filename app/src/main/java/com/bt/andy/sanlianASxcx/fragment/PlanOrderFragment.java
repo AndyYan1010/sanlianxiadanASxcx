@@ -2,17 +2,17 @@ package com.bt.andy.sanlianASxcx.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvAcceptAdapter;
-import com.bt.andy.sanlianASxcx.utils.ToastUtils;
+import com.bt.andy.sanlianASxcx.messegeInfo.InstAndRepInfo;
+import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import java.util.ArrayList;
@@ -59,32 +59,17 @@ public class PlanOrderFragment extends Fragment {
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO:弹出详情
-                ToastUtils.showToast(getContext(), "弹出详情");
-                showMoreInfo();
+                String orderID = "";
+                if ("0".equals(mKind)) {
+                    PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mData.get(i);
+                    orderID = bean.getId();
+                } else {
+                    InstAndRepInfo.ApplyBean bean = (InstAndRepInfo.ApplyBean) mData.get(i);
+                    orderID = bean.getId();
+                }
+                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
             }
         });
-    }
-
-    private void showMoreInfo() {
-        final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-        View v = View.inflate(getContext(), R.layout.alert_ps_jd, null);
-        TextView tv_address = v.findViewById(R.id.tv_address);
-        TextView tv_date = v.findViewById(R.id.tv_date);
-        TextView tv_jdate = v.findViewById(R.id.tv_jdate);
-        TextView tv_azdate = v.findViewById(R.id.tv_azdate);
-        TextView tv_task = v.findViewById(R.id.tv_task);
-        TextView tv_person = v.findViewById(R.id.tv_person);
-        TextView tv_close = v.findViewById(R.id.tv_close);
-        tv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        dialog.setTitle("详细信息");
-        dialog.setView(v);
-        dialog.show();
     }
 
     public void setDataList(List data) {

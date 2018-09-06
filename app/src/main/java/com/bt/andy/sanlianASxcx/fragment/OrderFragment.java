@@ -1,22 +1,24 @@
 package com.bt.andy.sanlianASxcx.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvOrderAdapter;
 import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
+import com.bt.andy.sanlianASxcx.messegeInfo.LoginInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
@@ -25,6 +27,7 @@ import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +54,7 @@ public class OrderFragment extends Fragment {
     private List               mData;
     private LvOrderAdapter     tourPlanAdapter;
     private String             mKind;
+    private int REQUEST_CODE = 1002;//接收扫描结果
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,7 +74,7 @@ public class OrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取订单信息
-        getOrderInfo();
+        //        getOrderInfo();
     }
 
     private void initData() {
@@ -80,13 +84,19 @@ public class OrderFragment extends Fragment {
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO:
-                ToastUtils.showToast(getContext(), "弹出详情");
-                showMoreInfo();
+                String orderID = "";
+                if ("0".equals(mKind)) {
+                    PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mData.get(i);
+                    orderID = bean.getId();
+                } else {
+                    AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
+                    orderID = info.getId();
+                }
+                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
             }
         });
         //获取订单信息
-        //        getOrderInfo();
+        getOrderInfo();
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -110,25 +120,63 @@ public class OrderFragment extends Fragment {
         }
     }
 
-    private void showMoreInfo() {
-        final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-        View v = View.inflate(getContext(), R.layout.alert_ps_jd, null);
-        TextView tv_address = v.findViewById(R.id.tv_address);
-        TextView tv_date = v.findViewById(R.id.tv_date);
-        TextView tv_jdate = v.findViewById(R.id.tv_jdate);
-        TextView tv_azdate = v.findViewById(R.id.tv_azdate);
-        TextView tv_task = v.findViewById(R.id.tv_task);
-        TextView tv_person = v.findViewById(R.id.tv_person);
-        TextView tv_close = v.findViewById(R.id.tv_close);
-        tv_close.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /** 处理二维码扫描结果*/
+        if (requestCode == REQUEST_CODE) {
+            //处理扫描结果（在界面上显示）
+            if (null != data) {
+                Bundle bundle = data.getExtras();
+                if (bundle == null) {
+                    return;
+                }
+                if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                    String result = bundle.getString(CodeUtils.RESULT_STRING);
+                    //获取扫描信息，填写到对应et
+                    if (requestCode == REQUEST_CODE) {
+                        int which = tourPlanAdapter.getWhich();
+                        AnzYuyueInfo info = (AnzYuyueInfo) mData.get(which);
+                        //提交二维码信息
+                        sendQcode(info.getId(), result);
+                    }
+                } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                    Toast.makeText(getContext(), "解析二维码失败", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    private void sendQcode(String orderID, String Qcode) {
+        ProgressDialogUtil.startShow(getContext(), "正在提交二维码...");
+        String slewmUrl = NetConfig.SELECTEWM;
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("QCode", Qcode);
+        params.put("id", orderID);
+        HttpOkhUtils.getInstance().doGetWithParams(slewmUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
-            public void onClick(View view) {
-                dialog.dismiss();
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(getContext(), "网络连接错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code != 200) {
+                    ToastUtils.showToast(getContext(), "网络连接错误" + code);
+                    return;
+                }
+                Gson gson = new Gson();
+                LoginInfo loginInfo = gson.fromJson(resbody, LoginInfo.class);
+                int result = loginInfo.getResult();
+                if (result == 1) {
+                    ToastUtils.showToast(getContext(), "提交成功");
+                } else {
+                    ToastUtils.showToast(getContext(), "提交失败" + result);
+                }
             }
         });
-        dialog.setTitle("详细信息");
-        dialog.setView(v);
-        dialog.show();
     }
 
     private void getWxYuYue() {
@@ -154,16 +202,16 @@ public class OrderFragment extends Fragment {
                     return;
                 }
                 Gson gson = new Gson();
-                PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
-                int result = peiSInfo.getResult();
-                if (result == 1) {
-                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
-                    for (PeiSInfo.ApplyBean bean : apply) {
-                        mData.add(bean);
+                try {
+                    JSONArray jsonArray = new JSONArray(resbody);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
+                        mData.add(anzYYInfo);
                     }
                     tourPlanAdapter.notifyDataSetChanged();
-                } else {
-                    ToastUtils.showToast(getContext(), "获取配送单失败");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtils.showToast(getContext(), "数据解析失败");
                 }
             }
         });

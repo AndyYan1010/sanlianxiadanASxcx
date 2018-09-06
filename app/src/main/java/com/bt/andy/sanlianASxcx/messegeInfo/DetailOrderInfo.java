@@ -2,70 +2,74 @@ package com.bt.andy.sanlianASxcx.messegeInfo;
 
 /**
  * @创建者 AndyYan
- * @创建时间 2018/8/29 14:27
+ * @创建时间 2018/9/6 15:48
  * @描述 ${TODO}
  * @更新者 $Author$
  * @更新时间 $Date$
  * @更新描述 ${TODO}
  */
 
-public class AnzYuyueInfo {
+public class DetailOrderInfo {
 
     /**
-     * id : 40288afd657925860165792da71b0008
-     * fpeople : 测试安装1
+     * id : 40288afd6579258601657930e1e0000a
+     * fpeople : 测试安装2
      * ftel : 18234567890
-     * faddress : 1
+     * faddress : 2
      * fname : null
      * fsale_person : null
      * foperate_task : null
-     * fmoney : null
-     * fmoney_kind : null
-     * fbstatus : 4
+     * fmoney : 2.00
+     * fmoney_kind : 保修期之内
+     * fbstatus : 7
      * fget_time : null
      * ewm : null
      * fgodate : null
-     * fshifu : null
+     * fshifu : 张三
      * fcontent : null
-     * special_note :
-     * forderno :
+     * special_note : null
+     * forderno : null
      * fshifuid : null
-     * fdate : null
-     * azfdate : null
+     * fdate :
+     * azfdate :
      * psstatus : 1
-     * pinming : null
-     * qty : null
+     * pinming : 2
+     * qty : 2.00
      * ordertype : null
      * ftype : null
      * ftype1 : null
+     * psshifu :
+     * notes : 5555
      */
 
     private String id;
     private String fpeople;
     private String ftel;
     private String faddress;
-    private String fname;
-    private String fsale_person;
-    private String foperate_task;
-    private Object fmoney;
-    private Object fmoney_kind;
+    private Object fname;
+    private Object fsale_person;
+    private Object foperate_task;
+    private String fmoney;
+    private String fmoney_kind;
     private String fbstatus;
-    private String fget_time;
-    private String ewm;
+    private Object fget_time;
+    private Object ewm;
     private String fgodate;
     private String fshifu;
-    private String fcontent;
-    private String special_note;
-    private String forderno;
-    private String fshifuid;
+    private Object fcontent;
+    private Object special_note;
+    private Object forderno;
+    private Object fshifuid;
     private String fdate;
     private String azfdate;
     private String psstatus;
     private String pinming;
     private String qty;
-    private String ordertype;
-    private String ftype;
-    private String ftype1;
+    private Object ordertype;
+    private Object ftype;
+    private Object ftype1;
+    private String psshifu;
+    private String notes;
 
     public String getId() {
         return id;
@@ -99,43 +103,43 @@ public class AnzYuyueInfo {
         this.faddress = faddress;
     }
 
-    public String getFname() {
+    public Object getFname() {
         return fname;
     }
 
-    public void setFname(String fname) {
+    public void setFname(Object fname) {
         this.fname = fname;
     }
 
-    public String getFsale_person() {
+    public Object getFsale_person() {
         return fsale_person;
     }
 
-    public void setFsale_person(String fsale_person) {
+    public void setFsale_person(Object fsale_person) {
         this.fsale_person = fsale_person;
     }
 
-    public String getFoperate_task() {
+    public Object getFoperate_task() {
         return foperate_task;
     }
 
-    public void setFoperate_task(String foperate_task) {
+    public void setFoperate_task(Object foperate_task) {
         this.foperate_task = foperate_task;
     }
 
-    public Object getFmoney() {
+    public String getFmoney() {
         return fmoney;
     }
 
-    public void setFmoney(Object fmoney) {
+    public void setFmoney(String fmoney) {
         this.fmoney = fmoney;
     }
 
-    public Object getFmoney_kind() {
+    public String getFmoney_kind() {
         return fmoney_kind;
     }
 
-    public void setFmoney_kind(Object fmoney_kind) {
+    public void setFmoney_kind(String fmoney_kind) {
         this.fmoney_kind = fmoney_kind;
     }
 
@@ -147,19 +151,19 @@ public class AnzYuyueInfo {
         this.fbstatus = fbstatus;
     }
 
-    public String getFget_time() {
+    public Object getFget_time() {
         return fget_time;
     }
 
-    public void setFget_time(String fget_time) {
+    public void setFget_time(Object fget_time) {
         this.fget_time = fget_time;
     }
 
-    public String getEwm() {
+    public Object getEwm() {
         return ewm;
     }
 
-    public void setEwm(String ewm) {
+    public void setEwm(Object ewm) {
         this.ewm = ewm;
     }
 
@@ -171,7 +175,7 @@ public class AnzYuyueInfo {
         this.fgodate = fgodate;
     }
 
-    public Object getFshifu() {
+    public String getFshifu() {
         return fshifu;
     }
 
@@ -183,31 +187,31 @@ public class AnzYuyueInfo {
         return fcontent;
     }
 
-    public void setFcontent(String fcontent) {
+    public void setFcontent(Object fcontent) {
         this.fcontent = fcontent;
     }
 
-    public String getSpecial_note() {
+    public Object getSpecial_note() {
         return special_note;
     }
 
-    public void setSpecial_note(String special_note) {
+    public void setSpecial_note(Object special_note) {
         this.special_note = special_note;
     }
 
-    public String getForderno() {
+    public Object getForderno() {
         return forderno;
     }
 
-    public void setForderno(String forderno) {
+    public void setForderno(Object forderno) {
         this.forderno = forderno;
     }
 
-    public String getFshifuid() {
+    public Object getFshifuid() {
         return fshifuid;
     }
 
-    public void setFshifuid(String fshifuid) {
+    public void setFshifuid(Object fshifuid) {
         this.fshifuid = fshifuid;
     }
 
@@ -251,27 +255,43 @@ public class AnzYuyueInfo {
         this.qty = qty;
     }
 
-    public String getOrdertype() {
+    public Object getOrdertype() {
         return ordertype;
     }
 
-    public void setOrdertype(String ordertype) {
+    public void setOrdertype(Object ordertype) {
         this.ordertype = ordertype;
     }
 
-    public String getFtype() {
+    public Object getFtype() {
         return ftype;
     }
 
-    public void setFtype(String ftype) {
+    public void setFtype(Object ftype) {
         this.ftype = ftype;
     }
 
-    public String getFtype1() {
+    public Object getFtype1() {
         return ftype1;
     }
 
-    public void setFtype1(String ftype1) {
+    public void setFtype1(Object ftype1) {
         this.ftype1 = ftype1;
+    }
+
+    public String getPsshifu() {
+        return psshifu;
+    }
+
+    public void setPsshifu(String psshifu) {
+        this.psshifu = psshifu;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

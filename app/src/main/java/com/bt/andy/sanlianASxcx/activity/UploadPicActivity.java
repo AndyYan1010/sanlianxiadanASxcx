@@ -131,7 +131,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.img_scan:
-                //TODO：扫描二维码
+                //扫描二维码
                 //动态申请照相机权限,开启照相机
                 scanningCode();
                 break;
@@ -149,8 +149,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     String code = String.valueOf(et_code.getText()).trim();
                     String fback = String.valueOf(et_fback.getText()).trim();
                     if ("".equals(code) || "请输入或扫码填入机器二维码".equals(code)) {
-                        ToastUtils.showToast(UploadPicActivity.this, "请输入或扫码填入机器二维码");
-                        return;
+                        //                        ToastUtils.showToast(UploadPicActivity.this, "请输入或扫码填入机器二维码");
+                        code = "";
+                        //                        return;
                     }
                     if ("".equals(fback) || "请输入服务反馈".equals(fback)) {
                         ToastUtils.showToast(UploadPicActivity.this, "请输入服务反馈");
@@ -271,6 +272,12 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                         ProgressDialogUtil.hideDialog();
                         finish();
                     }
+                } else if ("2".equals(resbody)) {
+                    ProgressDialogUtil.hideDialog();
+                    ToastUtils.showToast(UploadPicActivity.this, "图片上传失败，二维码不匹配");
+                }else {
+                    ProgressDialogUtil.hideDialog();
+                    ToastUtils.showToast(UploadPicActivity.this, "图片上传失败");
                 }
             }
         });
@@ -281,7 +288,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         if ("7".equals(subTimes)) {
             upLoadPic = NetConfig.INSERTIMG1;
         }
-        ProgressDialogUtil.startShow(this, "正在上传");
+        ProgressDialogUtil.startShow(this, "正在上传" + subTimes);
         RequestParamsFM params = new RequestParamsFM();
         params.put("Note", markNote);
         params.put("id", orderID);
@@ -306,6 +313,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                         ProgressDialogUtil.hideDialog();
                         finish();
                     }
+                }else {
+                    ProgressDialogUtil.hideDialog();
+                    ToastUtils.showToast(UploadPicActivity.this, "上传结果"+resbody);
                 }
             }
         });

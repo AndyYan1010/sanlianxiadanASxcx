@@ -1,6 +1,12 @@
 package com.bt.andy.sanlianASxcx.adapter;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +14,7 @@ import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
+import com.bt.andy.sanlianASxcx.activity.SaomiaoUIActivity;
 import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
@@ -35,6 +42,7 @@ public class LvOrderAdapter extends BaseAdapter {
     private Context mContext;
     private List    mList;
     private String  mKind;
+    private int     which;
 
     public LvOrderAdapter(Context context, List list, String kind) {
         this.mContext = context;
@@ -98,7 +106,7 @@ public class LvOrderAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     final String ftel = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
-                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+                    //                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
                     if (null == ftel || "".equals(ftel)) {
                         ToastUtils.showToast(mContext, "该订单没有留存电话");
                         return;
@@ -109,60 +117,62 @@ public class LvOrderAdapter extends BaseAdapter {
         } else {
             viewholder.tv_accept.setText("扫码");
             viewholder.tv_call_phone.setText("打电话");
-            if ("1".equals(mKind)) {//安装
-                final AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
-                viewholder.tv_num.setText(anzYuyueInfo.getForderno());
-                viewholder.tv_address.setText(anzYuyueInfo.getFaddress());
-                viewholder.tv_cont.setText(anzYuyueInfo.getFpeople());
-                viewholder.tv_contPhone.setText(anzYuyueInfo.getFtel());
-                viewholder.tv_warn.setText(anzYuyueInfo.getSpecial_note());
-                String fbstatus = anzYuyueInfo.getFbstatus();
-                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String phoneNum = ((AnzYuyueInfo) mList.get(i)).getFtel();
-                        String orderID = ((AnzYuyueInfo) mList.get(i)).getId();
-                        //拨打电话
-                        if (null == phoneNum || "".equals(phoneNum)) {
-                            ToastUtils.showToast(mContext, "该订单没有留存电话");
-                            return;
-                        }
-                        ShowCallUtil.showCallDialog(mContext, phoneNum, orderID);
+            //            if ("1".equals(mKind)) {//安装
+            final AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
+            viewholder.tv_num.setText(anzYuyueInfo.getForderno());
+            viewholder.tv_address.setText(anzYuyueInfo.getFaddress());
+            viewholder.tv_cont.setText(anzYuyueInfo.getFpeople());
+            viewholder.tv_contPhone.setText(anzYuyueInfo.getFtel());
+            viewholder.tv_warn.setText(anzYuyueInfo.getSpecial_note());
+            String fbstatus = anzYuyueInfo.getFbstatus();
+            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String phoneNum = ((AnzYuyueInfo) mList.get(i)).getFtel();
+                    String orderID = ((AnzYuyueInfo) mList.get(i)).getId();
+                    //拨打电话
+                    if (null == phoneNum || "".equals(phoneNum)) {
+                        ToastUtils.showToast(mContext, "该订单没有留存电话");
+                        return;
                     }
-                });
-                if ("4".equals(fbstatus)) {//打过电话
-                    viewholder.tv_call_phone.setText("预约");
-                    viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //预约更改成上门服务状态
-                            anzUpToService(anzYuyueInfo.getId(),i);
-                        }
-                    });
+                    ShowCallUtil.showCallDialog(mContext, phoneNum, orderID);
                 }
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //TODO:安装扫码
-
-                    }
-                });
-            } else {//维修
-                //TODO:
-
+            });
+            if ("4".equals(fbstatus)) {//打过电话
+                viewholder.tv_call_phone.setText("预约");
                 viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String phoneNum = "";
-                        //拨打电话
-                        if (null == phoneNum || "".equals(phoneNum)) {
-                            ToastUtils.showToast(mContext, "该订单没有留存电话");
-                            return;
-                        }
-                        ShowCallUtil.showCallDialog(mContext, phoneNum, "");
+                        //预约更改成上门服务状态
+                        anzUpToService(anzYuyueInfo.getId(), i);
                     }
                 });
             }
+            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    which = i;
+                    //扫描二维码
+                    //动态申请照相机权限,开启照相机
+                    scanningCode();
+                }
+            });
+            //            }
+            //            else {//维修
+            //                //TODO:
+            //                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+            //                    @Override
+            //                    public void onClick(View view) {
+            //                        String phoneNum = "";
+            //                        //拨打电话
+            //                        if (null == phoneNum || "".equals(phoneNum)) {
+            //                            ToastUtils.showToast(mContext, "该订单没有留存电话");
+            //                            return;
+            //                        }
+            //                        ShowCallUtil.showCallDialog(mContext, phoneNum, "");
+            //                    }
+            //                });
+            //            }
         }
         return view;
     }
@@ -170,6 +180,22 @@ public class LvOrderAdapter extends BaseAdapter {
     private class MyViewholder {
         View     view_line;
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
+    }
+
+    private int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;//申请照相机权限结果
+    private int REQUEST_CODE                       = 1002;//接收扫描结果
+
+    private void scanningCode() {
+        //第二个参数是需要申请的权限
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            //权限还没有授予，需要在这里写申请权限的代码
+            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    MY_PERMISSIONS_REQUEST_CALL_PHONE2);
+        } else {
+            Intent intent = new Intent(mContext, SaomiaoUIActivity.class);//这是一个自定义的扫描界面，扫描UI框放大了。
+            ((Activity) mContext).startActivityForResult(intent, REQUEST_CODE);
+        }
     }
 
     private void anzUpToService(String orderID, final int item) {
@@ -203,7 +229,6 @@ public class LvOrderAdapter extends BaseAdapter {
                 }
             }
         });
-
     }
 
     private void getPsGoods(String orderID, final int item) {
@@ -238,5 +263,9 @@ public class LvOrderAdapter extends BaseAdapter {
                 }
             }
         });
+    }
+
+    public int getWhich() {
+        return which;
     }
 }

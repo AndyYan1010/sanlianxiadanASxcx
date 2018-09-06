@@ -27,6 +27,7 @@ import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
+import com.bt.andy.sanlianASxcx.utils.ShowCallUtil;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 import com.google.gson.Gson;
 
@@ -104,63 +105,64 @@ public class LvServiceAdapter extends BaseAdapter {
             viewholder.tv_cont.setText(bean.getFpeople());
             viewholder.tv_contPhone.setText(bean.getFtel());
             viewholder.tv_warn.setText(bean.getSpecial_note());
-
-            String fbstatus = bean.getFbstatus();
-            if ("5".equals(fbstatus)) {
-                viewholder.tv_accept.setText("签到");
-                viewholder.tv_call_phone.setVisibility(View.GONE);
-                viewholder.tv_compl.setVisibility(View.GONE);
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-                        signLocal(bean.getId());
+            viewholder.tv_accept.setText("上传");
+            viewholder.tv_call_phone.setText("打电话");
+            viewholder.tv_compl.setVisibility(View.VISIBLE);
+            viewholder.tv_compl.setBackgroundResource(R.drawable.bg_round_brown);
+            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+                    if (null == orderID || "".equals(orderID)) {
+                        ToastUtils.showToast(mContext, "该订单没有获取到id");
+                        return;
                     }
-                });
-            } else {
-                viewholder.tv_accept.setText("上传");
-                viewholder.tv_call_phone.setVisibility(View.VISIBLE);
-                viewholder.tv_call_phone.setText("签退");
-                viewholder.tv_compl.setVisibility(View.GONE);
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
-                        if (null == orderID || "".equals(orderID)) {
-                            ToastUtils.showToast(mContext, "该订单没有获取到id");
-                            return;
-                        }
-                        //上传图片
-                        upPic(orderID, ((PeiSInfo.ApplyBean) mList.get(i)).getFbstatus());
-                    }
-                });
-                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {//签退
-                        String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
-                        openPopupWindow(viewholder.tv_call_phone, i, orderID);
-                    }
-                });
-            }
-
-            //            viewholder.tv_compl.setOnClickListener(new View.OnClickListener() {
-            //                @Override
-            //                public void onClick(View view) {
-            //                    //确认完成
-            //                    completeOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
-            //                }
-            //            });
-            //            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-            //                @Override
-            //                public void onClick(View view) {
-            //                    String phoneNum = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
-            //                    if (null == phoneNum || "".equals(phoneNum)) {
-            //                        ToastUtils.showToast(mContext, "该订单没有留存电话");
-            //                        return;
+                    //上传图片
+                    upPic(orderID, ((PeiSInfo.ApplyBean) mList.get(i)).getFbstatus());
+                }
+            });
+            //            if ("5".equals(fbstatus)) {
+            //                viewholder.tv_accept.setText("签到");
+            //                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+            //                    @Override
+            //                    public void onClick(View view) {
+            //                        PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
+            //                        signLocal(bean.getId());
             //                    }
-            //                    ShowCallUtil.showCallDialog(mContext, phoneNum);
-            //                }
-            //            });
+            //                });
+            //            } else {
+            //                viewholder.tv_accept.setText("上传");
+            //                viewholder.tv_call_phone.setVisibility(View.VISIBLE);
+            //                viewholder.tv_call_phone.setText("签退");
+            //                viewholder.tv_compl.setVisibility(View.GONE);
+            //
+            //                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+            //                    @Override
+            //                    public void onClick(View view) {//签退
+            //                        String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+            //                        openPopupWindow(viewholder.tv_call_phone, i, orderID);
+            //                    }
+            //                });
+            //            }
+
+            viewholder.tv_compl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //确认完成
+                    completeOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
+                }
+            });
+            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String phoneNum = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
+                    if (null == phoneNum || "".equals(phoneNum)) {
+                        ToastUtils.showToast(mContext, "该订单没有留存电话");
+                        return;
+                    }
+                    ShowCallUtil.showCallDialog(mContext, phoneNum);
+                }
+            });
         } else {
             final AnzYuyueInfo info = (AnzYuyueInfo) mList.get(i);
             viewholder.tv_num.setText(info.getForderno());
@@ -296,7 +298,8 @@ public class LvServiceAdapter extends BaseAdapter {
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-
+                //设置背景色
+                setBackgroundAlpha(1.0f);
             }
         });
         //设置PopupWindow的View点击事件

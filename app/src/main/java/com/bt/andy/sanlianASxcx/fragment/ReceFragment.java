@@ -104,7 +104,7 @@ public class ReceFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取待接单
-        getPendOrder();
+//        getPendOrder();
     }
 
     //获取待接单
@@ -151,7 +151,7 @@ public class ReceFragment extends Fragment {
                     List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
                     planFragment.setDataList(apply);
                 } else {
-                    ToastUtils.showToast(getContext(), "获取安装单失败");
+                    ToastUtils.showToast(getContext(), "未获取到维修单");
                 }
             }
         });
@@ -187,7 +187,7 @@ public class ReceFragment extends Fragment {
                     List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
                     planFragment.setDataList(apply);
                 } else {
-                    ToastUtils.showToast(getContext(), "获取安装单失败");
+                    ToastUtils.showToast(getContext(), "未获取到安装单");
                 }
             }
         });

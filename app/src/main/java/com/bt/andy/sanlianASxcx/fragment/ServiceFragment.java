@@ -3,13 +3,11 @@ package com.bt.andy.sanlianASxcx.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
@@ -17,6 +15,7 @@ import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvServiceAdapter;
 import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
@@ -75,13 +74,20 @@ public class ServiceFragment extends Fragment {
 
     private void initData() {
         mData = new ArrayList();
-        tourPlanAdapter = new LvServiceAdapter(getContext(), mData,mKind);
+        tourPlanAdapter = new LvServiceAdapter(getContext(), mData, mKind);
         lv_tour.setAdapter(tourPlanAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO：
-                showMoreInfo();
+                String orderID = "";
+                if ("0".equals(mKind)) {
+                    PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mData.get(i);
+                    orderID = bean.getId();
+                } else {
+                    AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
+                    orderID = info.getId();
+                }
+                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
             }
         });
         //获取服务内容
@@ -93,27 +99,6 @@ public class ServiceFragment extends Fragment {
                 getServiceCont();
             }
         });
-    }
-
-    private void showMoreInfo() {
-        final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-        View v = View.inflate(getContext(), R.layout.alert_ps_jd, null);
-        TextView tv_address = v.findViewById(R.id.tv_address);
-        TextView tv_date = v.findViewById(R.id.tv_date);
-        TextView tv_jdate = v.findViewById(R.id.tv_jdate);
-        TextView tv_azdate = v.findViewById(R.id.tv_azdate);
-        TextView tv_task = v.findViewById(R.id.tv_task);
-        TextView tv_person = v.findViewById(R.id.tv_person);
-        TextView tv_close = v.findViewById(R.id.tv_close);
-        tv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        dialog.setTitle("详细信息");
-        dialog.setView(v);
-        dialog.show();
     }
 
     private void getServiceCont() {
