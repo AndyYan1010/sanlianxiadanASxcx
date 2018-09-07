@@ -152,7 +152,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void setAlias(String id) {
-        String alias = id;
+//        String alias = id;//用户id
+        String alias = "9527";
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, alias));
     }

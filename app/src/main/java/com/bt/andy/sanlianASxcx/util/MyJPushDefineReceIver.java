@@ -17,6 +17,8 @@ import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.DistriActivity;
 import com.bt.andy.sanlianASxcx.activity.InstallActivity;
 import com.bt.andy.sanlianASxcx.activity.RepairActivity;
+import com.bt.andy.sanlianASxcx.messegeInfo.TuiSongInfo;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -90,15 +92,18 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
          * 3. 如果是在后台发出长声音
          * 4. 如果在前台发出短声音
          */
-        if (isRuninBackground(context)) {
-            sendNotification(context, extras);
-            //发出长声音
-            //参数2/3：左右喇叭声音的大小
-            mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
-        } else {
-            //发出短声音
-            mSoundPool.play(mDuanSound, 1, 1, 0, 0, 1);
-        }
+        mSoundPool.play(mDuanSound, 1, 1, 0, 0, 1);
+        Gson gson = new Gson();
+        TuiSongInfo tuiSongInfo = gson.fromJson(extras, TuiSongInfo.class);
+        String show_msg = "有" + tuiSongInfo.getNumber() + "笔新的" + tuiSongInfo.getOrdertype() + "待查看";
+        sendNotification(context, show_msg);
+        //        if (isRuninBackground(context)) {
+        //            //发出长声音
+        //            //参数2/3：左右喇叭声音的大小
+        //            mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
+        //        } else {
+        //            //发出短声音
+        //        }
     }
 
     private boolean isRuninBackground(Context context) {
@@ -169,19 +174,19 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
             Intent mIntent = new Intent(context, DistriActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mIntent.putExtra("kind","0");
+            mIntent.putExtra("kind", "0");
             context.startActivity(mIntent);
         } else if ("安装".equals(myValue)) {
             Intent mIntent = new Intent(context, InstallActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mIntent.putExtra("kind","1");
+            mIntent.putExtra("kind", "1");
             context.startActivity(mIntent);
         } else {
             Intent mIntent = new Intent(context, RepairActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mIntent.putExtra("kind","2");
+            mIntent.putExtra("kind", "2");
             context.startActivity(mIntent);
         }
     }
