@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Vibrator;
 
 import com.bt.andy.sanlianASxcx.MainActivity;
 import com.bt.andy.sanlianASxcx.R;
@@ -93,9 +94,14 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
          * 4. 如果在前台发出短声音
          */
         mSoundPool.play(mDuanSound, 1, 1, 0, 0, 1);
+        //振动
+        Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
+        vibrator.vibrate(500);
+        //解析extra
         Gson gson = new Gson();
         TuiSongInfo tuiSongInfo = gson.fromJson(extras, TuiSongInfo.class);
         String show_msg = "有" + tuiSongInfo.getNumber() + "笔新的" + tuiSongInfo.getOrdertype() + "待查看";
+        //显示通知
         sendNotification(context, show_msg);
         //        if (isRuninBackground(context)) {
         //            //发出长声音
