@@ -146,21 +146,20 @@
             android:value="4ab518039a4729f114822dc0"/>
 
         <!--自定义接收推送消息-->
-        <!--<receiver-->
-            <!--android:name=".util.MyJPushDefineReceIver"-->
-            <!--android:enabled="true"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="cn.jpush.android.intent.REGISTRATION"/>-->
-                <!--<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>-->
-                <!--<action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION"/>-->
-                <!--<action android:name="cn.jpush.android.intent.CONNECTION"/>-->
-
-                <!--<category android:name="com.bt.andy.sanlianASxcx"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <receiver
+            android:name=".util.MyJPushDefineReceIver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION"/>
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION"/>
+                <action android:name="cn.jpush.android.intent.CONNECTION"/>
+                <category android:name="com.bt.andy.sanlianASxcx"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

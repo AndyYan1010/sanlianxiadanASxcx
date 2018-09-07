@@ -36,15 +36,15 @@ import cn.jpush.android.api.JPushInterface;
 public class MyJPushDefineReceIver extends BroadcastReceiver {
     private static final String TAG = "MyReceiver";
     private NotificationManager nm;
-    private Context             mContext;
+    //    private Context             mContext;
     private SoundPool           mSoundPool;
     private int                 mDuanSound;
     private int                 mYuluSound;
     private int                 markExamine;
 
-    public MyJPushDefineReceIver(Context context) {
-        this.mContext = context;
-    }
+    //    public MyJPushDefineReceIver(Context context) {
+    //        this.mContext = context;
+    //    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -77,6 +77,7 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
     }
 
     private void receivingNotification(Context context, Bundle bundle) {
+        initSoundPool(context);
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
         //        Logger.d(TAG, " title : " + title);
         String message = bundle.getString(JPushInterface.EXTRA_ALERT);
@@ -89,8 +90,8 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
          * 3. 如果是在后台发出长声音
          * 4. 如果在前台发出短声音
          */
-        if (isRuninBackground()) {
-            sendNotification(message);
+        if (isRuninBackground(context)) {
+            sendNotification(context, extras);
             //发出长声音
             //参数2/3：左右喇叭声音的大小
             mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
@@ -100,49 +101,50 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         }
     }
 
-    private boolean isRuninBackground() {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(mContext.ACTIVITY_SERVICE);
+    private boolean isRuninBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(100);
         ActivityManager.RunningTaskInfo runningTaskInfo = runningTasks.get(0);
-        if (runningTaskInfo.topActivity.getPackageName().equals(mContext.getPackageName())) {
+        if (runningTaskInfo.topActivity.getPackageName().equals(context.getPackageName())) {
             return false;
         } else {
             return true;
         }
     }
 
-    public void initSoundPool() {
-        mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
-        mDuanSound = mSoundPool.load(mContext, R.raw.yulu, 1);
-        mYuluSound = mSoundPool.load(mContext, R.raw.yulu, 1);
+    public void initSoundPool(Context context) {
+        if (null == mSoundPool)
+            mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        mDuanSound = mSoundPool.load(context, R.raw.yulu, 1);
+        mYuluSound = mSoundPool.load(context, R.raw.yulu, 1);
     }
 
-    private void sendNotification(String message) {//kind=0 在后台，kind=1在前台
-        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+    private void sendNotification(Context context, String message) {//kind=0 在后台，kind=1在前台
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         //延时意图
         /**
          * 参数2：请求码 大于1
          */
-        Intent mainIntent = new Intent(mContext, MainActivity.class);
+        Intent mainIntent = new Intent(context, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Intent chatIntent;
         if (message.contains("配送")) {
-            chatIntent = new Intent(mContext, DistriActivity.class);
+            chatIntent = new Intent(context, DistriActivity.class);
             markExamine = 1;
         } else if (message.contains("安装")) {
-            chatIntent = new Intent(mContext, InstallActivity.class);
+            chatIntent = new Intent(context, InstallActivity.class);
             markExamine = 2;
         } else {
-            chatIntent = new Intent(mContext, RepairActivity.class);
+            chatIntent = new Intent(context, RepairActivity.class);
             markExamine = 3;
         }
         chatIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Intent[] intents = {mainIntent, chatIntent};
-        PendingIntent pendingIntent = PendingIntent.getActivities(mContext, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new Notification.Builder(mContext)
+        PendingIntent pendingIntent = PendingIntent.getActivities(context, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new Notification.Builder(context)
                 .setAutoCancel(true) //当点击后自动删除
                 .setSmallIcon(R.drawable.message) //必须设置
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher))
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setContentTitle("您有一条新消息")
                 .setContentText(message)
                 .setContentInfo("")
@@ -153,8 +155,8 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
     }
 
     private void openNotification(Context context, Bundle bundle) {
-        //        String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
-        String extras = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+        String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
+        //        String extras = bundle.getString(JPushInterface.EXTRA_MESSAGE);
         String myValue = "";
         try {
             JSONObject extrasJson = new JSONObject(extras);
@@ -167,16 +169,19 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
             Intent mIntent = new Intent(context, DistriActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mIntent.putExtra("kind","0");
             context.startActivity(mIntent);
         } else if ("安装".equals(myValue)) {
             Intent mIntent = new Intent(context, InstallActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mIntent.putExtra("kind","1");
             context.startActivity(mIntent);
         } else {
             Intent mIntent = new Intent(context, RepairActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mIntent.putExtra("kind","2");
             context.startActivity(mIntent);
         }
     }

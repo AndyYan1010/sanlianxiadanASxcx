@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -47,6 +48,7 @@ public class Search_F extends Fragment implements View.OnClickListener {
     private ListView                                   lv_search;
     private List<SearchDataOrderInfo.OredrpaylistBean> mData;
     private LvSearchOrderAdapter                       orderAdapter;
+    private ImageView                                  img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,13 +65,14 @@ public class Search_F extends Fragment implements View.OnClickListener {
         tv_end_time = mRootView.findViewById(R.id.tv_end_time);
         tv_search = mRootView.findViewById(R.id.tv_search);
         lv_search = mRootView.findViewById(R.id.lv_search);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
     }
 
     private void initData() {
         mTv_title.setText("查询");
         tv_start_time.setOnClickListener(this);
         tv_end_time.setOnClickListener(this);
-        getDate();
+        //        getDate();
 
         mData = new ArrayList();
         orderAdapter = new LvSearchOrderAdapter(getContext(), mData);
@@ -130,6 +133,7 @@ public class Search_F extends Fragment implements View.OnClickListener {
     }
 
     private void getOrderByTime(String st_time, String end_time) {
+        img_no_msg.setVisibility(View.VISIBLE);
         mData.clear();
         ProgressDialogUtil.startShow(getContext(), "正在查询");
         String wcdUrl = NetConfig.WANCHENGDATE;
@@ -156,6 +160,9 @@ public class Search_F extends Fragment implements View.OnClickListener {
                 int result = searchDataOrderInfo.getResult();
                 if (result == 1) {
                     List<SearchDataOrderInfo.OredrpaylistBean> oredrpaylist = searchDataOrderInfo.getOredrpaylist();
+                    if (oredrpaylist.size() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     mData.addAll(oredrpaylist);
                     orderAdapter.notifyDataSetChanged();
                 } else {

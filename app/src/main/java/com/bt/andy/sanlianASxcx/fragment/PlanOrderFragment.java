@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.bt.andy.sanlianASxcx.R;
@@ -34,6 +35,7 @@ public class PlanOrderFragment extends Fragment {
     private LvAcceptAdapter    tourPlanAdapter;
     private List               mData;
     private String             mKind;
+    private ImageView          img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class PlanOrderFragment extends Fragment {
 
     private void initView() {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
         smt_refresh.setEnableRefresh(false);
         smt_refresh.setEnableLoadMore(false);
@@ -52,6 +55,7 @@ public class PlanOrderFragment extends Fragment {
     }
 
     private void initData() {
+        img_no_msg.setVisibility(View.VISIBLE);
         if (null == mData)
             mData = new ArrayList();
         tourPlanAdapter = new LvAcceptAdapter(getContext(), mData, mKind, "plan");
@@ -67,7 +71,7 @@ public class PlanOrderFragment extends Fragment {
                     InstAndRepInfo.ApplyBean bean = (InstAndRepInfo.ApplyBean) mData.get(i);
                     orderID = bean.getId();
                 }
-                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
+                new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(orderID);
             }
         });
     }
@@ -77,6 +81,11 @@ public class PlanOrderFragment extends Fragment {
             mData = new ArrayList();
         } else {
             mData.clear();
+        }
+        if (data.size() > 0) {
+            img_no_msg.setVisibility(View.GONE);
+        } else {
+            img_no_msg.setVisibility(View.VISIBLE);
         }
         mData.addAll(data);
         if (null == tourPlanAdapter) {

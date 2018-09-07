@@ -3,13 +3,12 @@ package com.bt.andy.sanlianASxcx.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
@@ -17,6 +16,7 @@ import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvComplAdapter;
 import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
@@ -51,6 +51,7 @@ public class ComplFragment extends Fragment {
     private List               mData;
     private LvComplAdapter     tourPlanAdapter;
     private String             mKind;
+    private ImageView          img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class ComplFragment extends Fragment {
 
     private void initView() {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
         mKind = getActivity().getIntent().getStringExtra("kind");
     }
@@ -69,19 +71,27 @@ public class ComplFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //获取完成单
-        getComplOrder();
+        //        //获取完成单
+        //        getComplOrder();
     }
 
     private void initData() {
+        img_no_msg.setVisibility(View.VISIBLE);
         mData = new ArrayList();
-        tourPlanAdapter = new LvComplAdapter(getContext(), mData,mKind);
+        tourPlanAdapter = new LvComplAdapter(getContext(), mData, mKind);
         lv_tour.setAdapter(tourPlanAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO:
-                showMoreInfo();
+                String orderID = "";
+                if ("0".equals(mKind)) {
+                    PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mData.get(i);
+                    orderID = bean.getId();
+                } else {
+                    AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
+                    orderID = info.getId();
+                }
+                new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(orderID);
             }
         });
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
@@ -91,30 +101,12 @@ public class ComplFragment extends Fragment {
                 getComplOrder();
             }
         });
-    }
-
-    private void showMoreInfo() {
-        final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-        View v = View.inflate(getContext(), R.layout.alert_ps_jd, null);
-        TextView tv_address = v.findViewById(R.id.tv_address);
-        TextView tv_date = v.findViewById(R.id.tv_date);
-        TextView tv_jdate = v.findViewById(R.id.tv_jdate);
-        TextView tv_azdate = v.findViewById(R.id.tv_azdate);
-        TextView tv_task = v.findViewById(R.id.tv_task);
-        TextView tv_person = v.findViewById(R.id.tv_person);
-        TextView tv_close = v.findViewById(R.id.tv_close);
-        tv_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        dialog.setTitle("详细信息");
-        dialog.setView(v);
-        dialog.show();
+        //获取完成单
+        getComplOrder();
     }
 
     private void getComplOrder() {
+        img_no_msg.setVisibility(View.VISIBLE);
         if ("0".equals(mKind)) {
             //获取配送完成单
             getPeisComp();
@@ -152,6 +144,9 @@ public class ComplFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -190,6 +185,9 @@ public class ComplFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -231,6 +229,9 @@ public class ComplFragment extends Fragment {
                 int result = peiSInfo.getResult();
                 if (result == 1) {
                     List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
+                    if (apply.size() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (PeiSInfo.ApplyBean bean : apply) {
                         mData.add(bean);
                     }

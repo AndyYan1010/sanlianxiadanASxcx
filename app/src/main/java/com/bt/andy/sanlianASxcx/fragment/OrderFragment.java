@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -55,6 +56,7 @@ public class OrderFragment extends Fragment {
     private LvOrderAdapter     tourPlanAdapter;
     private String             mKind;
     private int REQUEST_CODE = 1002;//接收扫描结果
+    private ImageView img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class OrderFragment extends Fragment {
 
     private void initView() {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
         mKind = getActivity().getIntent().getStringExtra("kind");
     }
@@ -78,6 +81,7 @@ public class OrderFragment extends Fragment {
     }
 
     private void initData() {
+        img_no_msg.setVisibility(View.VISIBLE);
         mData = new ArrayList();
         tourPlanAdapter = new LvOrderAdapter(getContext(), mData, mKind);
         lv_tour.setAdapter(tourPlanAdapter);
@@ -92,7 +96,7 @@ public class OrderFragment extends Fragment {
                     AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
                     orderID = info.getId();
                 }
-                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
+                new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(orderID);
             }
         });
         //获取订单信息
@@ -108,6 +112,7 @@ public class OrderFragment extends Fragment {
 
     //获取订单信息
     private void getOrderInfo() {
+        img_no_msg.setVisibility(View.VISIBLE);
         if ("0".equals(mKind)) {
             //获取提货单
             getTihuo();
@@ -204,6 +209,9 @@ public class OrderFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -242,6 +250,9 @@ public class OrderFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -283,6 +294,9 @@ public class OrderFragment extends Fragment {
                 int result = peiSInfo.getResult();
                 if (result == 1) {
                     List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
+                    if (apply.size() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (PeiSInfo.ApplyBean bean : apply) {
                         mData.add(bean);
                     }

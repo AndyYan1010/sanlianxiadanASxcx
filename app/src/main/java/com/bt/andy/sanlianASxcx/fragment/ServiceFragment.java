@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
@@ -50,6 +51,7 @@ public class ServiceFragment extends Fragment {
     private List               mData;
     private LvServiceAdapter   tourPlanAdapter;
     private String             mKind;
+    private ImageView          img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class ServiceFragment extends Fragment {
 
     private void initView() {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
         mKind = getActivity().getIntent().getStringExtra("kind");
     }
@@ -69,10 +72,11 @@ public class ServiceFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取服务内容
-        getServiceCont();
+        //        getServiceCont();
     }
 
     private void initData() {
+        img_no_msg.setVisibility(View.VISIBLE);
         mData = new ArrayList();
         tourPlanAdapter = new LvServiceAdapter(getContext(), mData, mKind);
         lv_tour.setAdapter(tourPlanAdapter);
@@ -87,11 +91,9 @@ public class ServiceFragment extends Fragment {
                     AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
                     orderID = info.getId();
                 }
-                new GetOrderDetailInfoUtil(getContext(), mKind).showMoreInfo(orderID);
+                new GetOrderDetailInfoUtil(getContext(), mKind, true).showMoreInfo(orderID);
             }
         });
-        //获取服务内容
-        //        getServiceCont();
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -99,9 +101,12 @@ public class ServiceFragment extends Fragment {
                 getServiceCont();
             }
         });
+        //获取服务内容
+        getServiceCont();
     }
 
     private void getServiceCont() {
+        img_no_msg.setVisibility(View.VISIBLE);
         if ("0".equals(mKind)) {
             //获取配送服务
             getPeisServ();
@@ -139,6 +144,9 @@ public class ServiceFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -177,6 +185,9 @@ public class ServiceFragment extends Fragment {
                 Gson gson = new Gson();
                 try {
                     JSONArray jsonArray = new JSONArray(resbody);
+                    if (jsonArray.length() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
                         AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
                         mData.add(anzYYInfo);
@@ -218,6 +229,9 @@ public class ServiceFragment extends Fragment {
                 int result = peiSInfo.getResult();
                 if (result == 1) {
                     List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
+                    if (apply.size() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     for (PeiSInfo.ApplyBean bean : apply) {
                         mData.add(bean);
                     }

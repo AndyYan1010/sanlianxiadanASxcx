@@ -71,4 +71,6 @@ public class NetConfig {
     public static String DETAIL       = ROOT + "detail.do";
     //待预约中，提交扫码信息
     public static String SELECTEWM    = ROOT + "selectewm.do";
+    //更改上门时间
+    public static String UPDATEDATE   = ROOT + "UpdateDate.do";
 }

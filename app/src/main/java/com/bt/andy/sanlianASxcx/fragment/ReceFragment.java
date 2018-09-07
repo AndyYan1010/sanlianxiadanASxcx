@@ -89,8 +89,6 @@ public class ReceFragment extends Fragment {
         for (int i = 0; i < conts.length; i++) {
             mTablayout.getTabAt(i).setText(conts[i]);
         }
-        //获取待接单
-        getPendOrder();
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -98,6 +96,8 @@ public class ReceFragment extends Fragment {
                 getPendOrder();
             }
         });
+        //获取待接单
+        getPendOrder();
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ReceFragment extends Fragment {
                     List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();//排单
                     planFragment.setDataList(apply);
                 } else {
-                    ToastUtils.showToast(getContext(), "获取配送单失败");
+                    ToastUtils.showToast(getContext(), "未获取到配送单");
                 }
             }
         });
