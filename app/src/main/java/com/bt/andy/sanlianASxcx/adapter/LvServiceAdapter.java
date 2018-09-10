@@ -180,7 +180,7 @@ public class LvServiceAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         AnzYuyueInfo info = (AnzYuyueInfo) mList.get(i);
-                        signLocal(info.getId());
+                        signLocal(info.getId(), i);
                     }
                 });
             } else {
@@ -237,7 +237,7 @@ public class LvServiceAdapter extends BaseAdapter {
         TextView tv_accept, tv_call_phone, tv_compl, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void signLocal(String orderID) {
+    private void signLocal(String orderID, final int item) {
         String lngAndLat = getLngAndLat(mContext);
         String[] split = lngAndLat.split(",");
         String lng = split[0];
@@ -267,6 +267,9 @@ public class LvServiceAdapter extends BaseAdapter {
                 int result = loginInfo.getResult();
                 if (result == 1) {
                     ToastUtils.showToast(mContext, "签到成功");
+                    AnzYuyueInfo info = (AnzYuyueInfo) mList.get(item);
+                    info.setFbstatus("6");
+                    notifyDataSetChanged();
                 } else {
                     ToastUtils.showToast(mContext, "签到失败，请重新签到");
                 }
@@ -382,6 +385,7 @@ public class LvServiceAdapter extends BaseAdapter {
                 int result = peiSInfo.getResult();
                 if (result == 1) {
                     ToastUtils.showToast(mContext, "签退成功");
+                    popupWindow.dismiss();
                     mList.remove(item);
                     notifyDataSetChanged();
                 } else {
@@ -392,7 +396,7 @@ public class LvServiceAdapter extends BaseAdapter {
     }
 
     private void upPic(String orderID, String times) {
-        //TODO:还需要哪些提交信息?
+        //传递信息?
         Intent intent = new Intent(mContext, UploadPicActivity.class);
         intent.putExtra("kind", mKind);//kind 0配送、1.2安装维修
         intent.putExtra("orderID", orderID);

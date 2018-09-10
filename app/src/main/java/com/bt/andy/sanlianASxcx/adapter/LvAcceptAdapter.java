@@ -164,7 +164,7 @@ public class LvAcceptAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         //接单
-                        acceptOrder02(((InstAndRepInfo.OrderazlistBean) mList.get(i)).getId(), i);
+                        acceptOrder02(((InstAndRepInfo.ApplyBean) mList.get(i)).getId(), i);
                     }
                 });
             }
@@ -180,22 +180,22 @@ public class LvAcceptAdapter extends BaseAdapter {
     private void robOrder(final int item) {
         String orderID;
         String type;
-        String status;
+        //        String status;
         if ("0".equals(mKind)) {
             PeiSInfo.OrderazlistBean orderazlistBean = (PeiSInfo.OrderazlistBean) mList.get(item);
             orderID = orderazlistBean.getId();
             type = "配送单";
-            status = orderazlistBean.getBpmstatus();
+            //            status = orderazlistBean.getBpmstatus();
         } else if ("1".equals(mKind)) {
             InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
             orderID = bean.getId();
             type = "安装单";
-            status = bean.getPsstatus();
+            //            status = bean.getPsstatus();
         } else {
             InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
             orderID = bean.getId();
             type = "维修单";
-            status = bean.getBpmstatus();
+            //            status = bean.getBpmstatus();
         }
         ProgressDialogUtil.startShow(mContext, "正在抢单...");
         String changeOrderUrl = NetConfig.UPDATEORDER;
@@ -203,7 +203,7 @@ public class LvAcceptAdapter extends BaseAdapter {
         params.put("id", orderID);
         params.put("ordertype", type);
         params.put("username", MyApplication.userName);
-        params.put("status", status);
+        //        params.put("status", status);
         HttpOkhUtils.getInstance().doGetWithParams(changeOrderUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
@@ -231,13 +231,12 @@ public class LvAcceptAdapter extends BaseAdapter {
             }
         });
     }
-    
+
     private void acceptOrder02(String orderID, final int item) {
-        ProgressDialogUtil.startShow(mContext, "正在抢单...");
+        ProgressDialogUtil.startShow(mContext, "正在接单...");
         String yySUrl = NetConfig.YUYUE;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
-        params.setUseJsonStreamer(true);
         HttpOkhUtils.getInstance().doPost(yySUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
@@ -249,7 +248,7 @@ public class LvAcceptAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, "网络连接错误");
+                    ToastUtils.showToast(mContext, "网络错误");
                     return;
                 }
                 Gson gson = new Gson();

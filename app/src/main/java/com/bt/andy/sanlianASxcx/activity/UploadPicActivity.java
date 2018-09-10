@@ -63,7 +63,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private ImageView         img_scan;
     private int IMAGE                              = 10086;//获取图片地址，请求值
     private int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;//申请照相机权限结果
-    private int REQUEST_CODE                       = 1002;//接收扫描结果
+    private int REQUEST_CODE                       = 1003;//接收扫描结果
     private String         scanCode;
     private String         markNote;
     private String         orderID;//订单id
@@ -265,9 +265,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     ToastUtils.showToast(UploadPicActivity.this, "网络错误");
                     return;
                 }
+                recordTime++;
                 if ("1".equals(resbody)) {
                     ToastUtils.showToast(UploadPicActivity.this, "图片" + (position + 1) + "上传成功");
-                    recordTime++;
                     if (recordTime == filePathList.size()) {
                         ProgressDialogUtil.hideDialog();
                         finish();

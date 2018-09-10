@@ -154,7 +154,7 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivities(context, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new Notification.Builder(context)
                 .setAutoCancel(true) //当点击后自动删除
-                .setSmallIcon(R.drawable.message) //必须设置
+                .setSmallIcon(R.drawable.icon_01) //必须设置
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setContentTitle("您有一条新消息")
                 .setContentText(message)
@@ -171,18 +171,18 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         String myValue = "";
         try {
             JSONObject extrasJson = new JSONObject(extras);
-            myValue = extrasJson.optString("myKey");
+            myValue = extrasJson.optString("ordertype");
         } catch (Exception e) {
             //            Logger.w(TAG, "Unexpected: extras is not a valid json", e);
             return;
         }
-        if ("配送".equals(myValue)) {
+        if ("配送".equals(myValue) || myValue.contains("配送")) {
             Intent mIntent = new Intent(context, DistriActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mIntent.putExtra("kind", "0");
             context.startActivity(mIntent);
-        } else if ("安装".equals(myValue)) {
+        } else if ("安装".equals(myValue)|| myValue.contains("安装")) {
             Intent mIntent = new Intent(context, InstallActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

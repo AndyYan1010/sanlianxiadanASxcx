@@ -82,10 +82,12 @@ public class PlanOrderFragment extends Fragment {
         } else {
             mData.clear();
         }
-        if (data.size() > 0) {
-            img_no_msg.setVisibility(View.GONE);
-        } else {
-            img_no_msg.setVisibility(View.VISIBLE);
+        if (null != img_no_msg) {
+            if (data.size() > 0) {
+                img_no_msg.setVisibility(View.GONE);
+            } else {
+                img_no_msg.setVisibility(View.VISIBLE);
+            }
         }
         mData.addAll(data);
         if (null == tourPlanAdapter) {

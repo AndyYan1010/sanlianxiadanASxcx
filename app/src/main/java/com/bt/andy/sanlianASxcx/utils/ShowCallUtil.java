@@ -98,7 +98,6 @@ public class ShowCallUtil {
         String callUrl = NetConfig.CALL;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
-        params.setUseJsonStreamer(true);
         HttpOkhUtils.getInstance().doPost(callUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {

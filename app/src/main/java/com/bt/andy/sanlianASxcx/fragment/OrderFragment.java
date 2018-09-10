@@ -77,7 +77,7 @@ public class OrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取订单信息
-        //        getOrderInfo();
+        //getOrderInfo();
     }
 
     private void initData() {
