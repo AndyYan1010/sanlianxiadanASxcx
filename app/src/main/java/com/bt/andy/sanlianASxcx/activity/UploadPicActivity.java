@@ -288,7 +288,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         if ("7".equals(subTimes)) {
             upLoadPic = NetConfig.INSERTIMG1;
         }
-        ProgressDialogUtil.startShow(this, "正在上传" + subTimes);
+        ProgressDialogUtil.startShow(this, "正在上传");
         RequestParamsFM params = new RequestParamsFM();
         params.put("Note", markNote);
         params.put("id", orderID);
