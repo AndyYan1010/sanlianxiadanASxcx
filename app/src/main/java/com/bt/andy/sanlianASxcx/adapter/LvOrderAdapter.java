@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.activity.InstallActivity;
 import com.bt.andy.sanlianASxcx.activity.SaomiaoUIActivity;
 import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
@@ -195,7 +194,7 @@ public class LvOrderAdapter extends BaseAdapter {
                     MY_PERMISSIONS_REQUEST_CALL_PHONE2);
         } else {
             Intent intent = new Intent(mContext, SaomiaoUIActivity.class);//这是一个自定义的扫描界面，扫描UI框放大了。
-            ((InstallActivity) mContext).startActivityForResult(intent, REQUEST_CODE);
+            ((Activity) mContext).startActivityForResult(intent, REQUEST_CODE);
         }
     }
 

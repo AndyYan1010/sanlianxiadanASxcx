@@ -1,5 +1,6 @@
 package com.bt.andy.sanlianASxcx.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,7 @@ public class RepairActivity extends BaseActivity implements View.OnClickListener
     private TabLayout        mTablayout;//导航标签
     private MyFixedViewpager mView_pager;//自我viewpager可实现禁止滑动
     private String[] conts = {"待接单", "待预约", "上门服务", "服务完成"};
+    private OrderFragment orderFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class RepairActivity extends BaseActivity implements View.OnClickListener
         ReceFragment tourPlanFragment = new ReceFragment();
         fragments.add(tourPlanFragment);
         //待预约界面
-        OrderFragment orderFragment = new OrderFragment();
+        orderFragment = new OrderFragment();
         fragments.add(orderFragment);
         //上门服务界面
         ServiceFragment serviceFragment = new ServiceFragment();
@@ -90,5 +92,11 @@ public class RepairActivity extends BaseActivity implements View.OnClickListener
                 finish();
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        orderFragment.onActivityResult(requestCode, resultCode, data);
     }
 }
