@@ -48,6 +48,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_actiivty);
+//        MyApplication.flag = 0;
         getView();
         setData();
     }
@@ -152,7 +153,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void setAlias(String id) {
-//        String alias = id;//用户id
+        //        String alias = id;//用户id
         String alias = "9527";
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, alias));
