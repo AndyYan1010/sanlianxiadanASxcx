@@ -72,7 +72,7 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             //            Logger.d(TAG, "用户点击打开了通知");
 
-//            openNotification(context, bundle);
+            //            openNotification(context, bundle);
 
         } else {
             //            Logger.d(TAG, "Unhandled intent - " + intent.getAction());
@@ -138,22 +138,23 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
          */
         Intent mainIntent = new Intent(context, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        Intent chatIntent;
-        if (message.contains("配送")) {
-            chatIntent = new Intent(context, DistriActivity.class);
-            chatIntent.putExtra("kind", "0");
-            markExamine = 1;
-        } else if (message.contains("安装")) {
-            chatIntent = new Intent(context, InstallActivity.class);
-            chatIntent.putExtra("kind", "1");
-            markExamine = 2;
-        } else {
-            chatIntent = new Intent(context, RepairActivity.class);
-            chatIntent.putExtra("kind", "2");
-            markExamine = 3;
-        }
-        chatIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        Intent[] intents = {mainIntent, chatIntent};
+        //        Intent chatIntent;
+        //        if (message.contains("配送")) {
+        //            chatIntent = new Intent(context, DistriActivity.class);
+        //            chatIntent.putExtra("kind", "0");
+        //            markExamine = 1;
+        //        } else if (message.contains("安装")) {
+        //            chatIntent = new Intent(context, InstallActivity.class);
+        //            chatIntent.putExtra("kind", "1");
+        //            markExamine = 2;
+        //        } else {
+        //            chatIntent = new Intent(context, RepairActivity.class);
+        //            chatIntent.putExtra("kind", "2");
+        //            markExamine = 3;
+        //        }
+        //        chatIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //        Intent[] intents = {mainIntent, chatIntent};
+        Intent[] intents = {mainIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(context, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new Notification.Builder(context)
                 .setAutoCancel(true) //当点击后自动删除
@@ -185,7 +186,7 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
             mIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             mIntent.putExtra("kind", "0");
             context.startActivity(mIntent);
-        } else if ("安装".equals(myValue)|| myValue.contains("安装")) {
+        } else if ("安装".equals(myValue) || myValue.contains("安装")) {
             Intent mIntent = new Intent(context, InstallActivity.class);
             mIntent.putExtras(bundle);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
