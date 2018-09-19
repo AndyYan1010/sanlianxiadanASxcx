@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
@@ -34,16 +35,12 @@ import okhttp3.Request;
  */
 
 public class LvAcceptAdapter extends BaseAdapter {
-    private Context mContext;
-    private List    mList;
-    private String  mKind;//0是配送，1是安装，2是维修
-    private String  mType;//类别：rob抢单，plan排单
+    private Context                            mContext;
+    private List<InstAndRepInfo.ApplylistBean> mList;
 
-    public LvAcceptAdapter(Context context, List list, String kind, String type) {
+    public LvAcceptAdapter(Context context, List<InstAndRepInfo.ApplylistBean> list) {
         this.mContext = context;
         this.mList = list;
-        this.mKind = kind;
-        this.mType = type;
     }
 
     @Override
@@ -67,6 +64,8 @@ public class LvAcceptAdapter extends BaseAdapter {
         if (null == view) {
             viewholder = new MyViewholder();
             view = View.inflate(mContext, R.layout.adpter_tour, null);
+            viewholder.img_kind = view.findViewById(R.id.img_kind);
+            viewholder.img_type = view.findViewById(R.id.img_type);
             viewholder.tv_num = view.findViewById(R.id.tv_num);
             viewholder.tv_address = view.findViewById(R.id.tv_address);
             viewholder.tv_cont = view.findViewById(R.id.tv_cont);
@@ -82,128 +81,81 @@ public class LvAcceptAdapter extends BaseAdapter {
         viewholder.view_line.setBackgroundColor(mContext.getResources().getColor(R.color.green_100));
         viewholder.tv_accept.setBackgroundResource(R.drawable.bg_round_green);
         viewholder.tv_call_phone.setBackgroundResource(R.drawable.bg_round_green);
-        if ("0".equals(mKind)) {
-            viewholder.tv_call_phone.setVisibility(View.VISIBLE);
-            if ("rob".equals(mType)) {//抢单
-                final PeiSInfo.OrderazlistBean bean = (PeiSInfo.OrderazlistBean) mList.get(i);
-                viewholder.tv_num.setText(bean.getOrderno());
-                viewholder.tv_address.setText(bean.getFDeliveryAddress());
-                viewholder.tv_cont.setText(bean.getFcontact());
-                viewholder.tv_contPhone.setText(bean.getFmobile());
-                viewholder.tv_warn.setText(bean.getNote());
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //抢单
-                        robOrder(i);
-                    }
-                });
-                //打电话
-                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String phone = ((PeiSInfo.OrderazlistBean) mList.get(i)).getFmobile();
-                        if (null == phone || "".equals(phone)) {
-                            ToastUtils.showToast(mContext, "该订单没有留存电话");
-                            return;
-                        }
-                        ShowCallUtil.showCallDialog(mContext, phone);
-                    }
-                });
-            } else {//配送分配排单
-                final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-                viewholder.tv_num.setText(bean.getForderno());
-                viewholder.tv_address.setText(bean.getFaddress());
-                viewholder.tv_cont.setText(bean.getFpeople());
-                viewholder.tv_contPhone.setText(bean.getFtel());
-                viewholder.tv_warn.setText(bean.getSpecial_note());
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //接单
-                        acceptPsOrder(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
-                    }
-                });
-                //打电话
-                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String phone = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
-                        if (null == phone || "".equals(phone)) {
-                            ToastUtils.showToast(mContext, "该订单没有留存电话");
-                            return;
-                        }
-                        ShowCallUtil.showCallDialog(mContext, phone);
-                    }
-                });
-            }
-        } else {//安装、配送
-            viewholder.tv_call_phone.setVisibility(View.GONE);
-            if ("rob".equals(mType)) {
-                final InstAndRepInfo.OrderazlistBean orderInfo = (InstAndRepInfo.OrderazlistBean) mList.get(i);
-                viewholder.tv_num.setText(orderInfo.getOrderno());
-                viewholder.tv_address.setText(orderInfo.getFDeliveryAddress());
-                viewholder.tv_cont.setText(orderInfo.getFcontact());
-                viewholder.tv_contPhone.setText(orderInfo.getFmobile());
-                viewholder.tv_warn.setText(orderInfo.getNote());
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //抢单
-                        robOrder(i);
-                    }
-                });
-            } else {//排单
-                final InstAndRepInfo.ApplyBean applyInfo = (InstAndRepInfo.ApplyBean) mList.get(i);
-                viewholder.tv_num.setText(applyInfo.getForderno());
-                viewholder.tv_address.setText(applyInfo.getFaddress());
-                viewholder.tv_cont.setText(applyInfo.getFpeople());
-                viewholder.tv_contPhone.setText(applyInfo.getFtel());
-                viewholder.tv_warn.setText(applyInfo.getSpecial_note());
-                viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //接单
-                        acceptOrder02(((InstAndRepInfo.ApplyBean) mList.get(i)).getId(), i);
-                    }
-                });
-            }
+
+        InstAndRepInfo.ApplylistBean applylistBean = mList.get(i);
+        String ordertype = applylistBean.getOrdertype();
+        if ("安装单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_anzhuang);
+            viewholder.img_type.setImageResource(R.drawable.icon_paid);
+        } else if ("配送单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_peisong);
+            viewholder.img_type.setImageResource(R.drawable.icon_paid);
+        } else if ("维修单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_weixiu);
+            viewholder.img_type.setImageResource(R.drawable.icon_paid);
+        } else if ("抢单安装单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_anzhuang);
+            viewholder.img_type.setImageResource(R.drawable.icon_rob);
+        } else if ("抢单配送单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_peisong);
+            viewholder.img_type.setImageResource(R.drawable.icon_rob);
+        } else if ("抢单维修单".equals(ordertype)) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_weixiu);
+            viewholder.img_type.setImageResource(R.drawable.icon_rob);
         }
+        viewholder.tv_num.setText(applylistBean.getForderno());
+        viewholder.tv_address.setText(applylistBean.getFaddress());
+        viewholder.tv_cont.setText(applylistBean.getFpeople());
+        viewholder.tv_contPhone.setText(applylistBean.getFtel());
+        viewholder.tv_warn.setText(applylistBean.getSpecial_note());
+        viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phone = ((InstAndRepInfo.ApplylistBean) mList.get(i)).getFtel();
+                if (null == phone || "".equals(phone)) {
+                    ToastUtils.showToast(mContext, "该订单没有留存电话");
+                    return;
+                }
+                ShowCallUtil.showCallDialog(mContext, phone);
+            }
+        });
+        viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InstAndRepInfo.ApplylistBean applylistBean1 = mList.get(i);
+                String ordertype1 = applylistBean1.getOrdertype();
+                String orderID = applylistBean1.getId();
+                if ("安装单".equals(ordertype1)) {
+                    acceptOrder02(orderID,i);
+                } else if ("配送单".equals(ordertype1)) {
+                    acceptPsOrder(orderID,i);
+                } else if ("维修单".equals(ordertype1)) {
+                    acceptOrder02(orderID,i);
+                } else if ("抢单安装单".equals(ordertype1)) {
+                    robOrder(orderID, "安装单", i);
+                } else if ("抢单配送单".equals(ordertype1)) {
+                    robOrder(orderID, "配送单", i);
+                } else if ("抢单维修单".equals(ordertype1)) {
+                    robOrder(orderID, "维修单", i);
+                }
+            }
+        });
         return view;
     }
 
     private class MyViewholder {
-        View     view_line;
+        View      view_line;
+        ImageView img_kind, img_type;
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
-    private void robOrder(final int item) {
-        String orderID;
-        String type;
-        //        String status;
-        if ("0".equals(mKind)) {
-            PeiSInfo.OrderazlistBean orderazlistBean = (PeiSInfo.OrderazlistBean) mList.get(item);
-            orderID = orderazlistBean.getId();
-            type = "配送单";
-            //            status = orderazlistBean.getBpmstatus();
-        } else if ("1".equals(mKind)) {
-            InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
-            orderID = bean.getId();
-            type = "安装单";
-            //            status = bean.getPsstatus();
-        } else {
-            InstAndRepInfo.OrderazlistBean bean = (InstAndRepInfo.OrderazlistBean) mList.get(item);
-            orderID = bean.getId();
-            type = "维修单";
-            //            status = bean.getBpmstatus();
-        }
+    private void robOrder(String orderID, String type, final int item) {
         ProgressDialogUtil.startShow(mContext, "正在抢单...");
         String changeOrderUrl = NetConfig.UPDATEORDER;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
         params.put("ordertype", type);
         params.put("username", MyApplication.userName);
-        //        params.put("status", status);
         HttpOkhUtils.getInstance().doGetWithParams(changeOrderUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
@@ -232,6 +184,7 @@ public class LvAcceptAdapter extends BaseAdapter {
         });
     }
 
+    //安装、维修接单
     private void acceptOrder02(String orderID, final int item) {
         ProgressDialogUtil.startShow(mContext, "正在接单...");
         String yySUrl = NetConfig.YUYUE;
@@ -265,12 +218,8 @@ public class LvAcceptAdapter extends BaseAdapter {
         });
     }
 
-    //接单
+    //配送接单
     private void acceptPsOrder(String orderID, final int item) {
-        if (null == orderID || "".equals(orderID)) {
-            ToastUtils.showToast(mContext, "该订单没有获取到id");
-            return;
-        }
         ProgressDialogUtil.startShow(mContext, "正在查询，请稍后...");
         String pswcSUrl = NetConfig.PSWC1;
         RequestParamsFM params = new RequestParamsFM();

@@ -3,23 +3,24 @@ package com.bt.andy.sanlianASxcx.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.adapter.MyPagerAdapter;
+import com.bt.andy.sanlianASxcx.adapter.LvAcceptAdapter;
 import com.bt.andy.sanlianASxcx.messegeInfo.InstAndRepInfo;
-import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
+import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
 import com.bt.andy.sanlianASxcx.utils.RequestParamsFM;
 import com.bt.andy.sanlianASxcx.utils.ToastUtils;
-import com.bt.andy.sanlianASxcx.viewmodle.MyFixedViewpager;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -41,14 +42,12 @@ import okhttp3.Request;
  */
 
 public class ReceFragment extends Fragment {
-    private View               mRootView;
-    private SmartRefreshLayout smt_refresh;
-    private String[] conts = {"抢单", "排单"};
-    private TabLayout         mTablayout;//导航标签
-    private MyFixedViewpager  mView_pager;//自我viewpager可实现禁止滑动
-    private RobOrderFragment  robFragment;
-    private PlanOrderFragment planFragment;
-    private String            mKind;
+    private View                               mRootView;
+    private SmartRefreshLayout                 smt_refresh;
+    private ListView                           lv_tour;
+    private List<InstAndRepInfo.ApplylistBean> mData;
+    private String                             mKind;
+    private ImageView                          img_no_msg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,35 +59,34 @@ public class ReceFragment extends Fragment {
 
     private void initView() {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
-        mTablayout = mRootView.findViewById(R.id.tablayout);
-        mView_pager = mRootView.findViewById(R.id.view_pager);
-        mKind = getActivity().getIntent().getStringExtra("kind");
-        smt_refresh.setEnableLoadMore(false);
+        img_no_msg = mRootView.findViewById(R.id.img_no_msg);
+        lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
     }
 
     private void initData() {
-        // 创建一个集合,装填Fragment
-        ArrayList<Fragment> fragments = new ArrayList<>();
-        // 装填
-        //抢单界面
-        robFragment = new RobOrderFragment();
-        fragments.add(robFragment);
-        //排界面
-        planFragment = new PlanOrderFragment();
-        fragments.add(planFragment);
-        // 创建ViewPager适配器
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
-        myPagerAdapter.setFragments(fragments);
-        // 给ViewPager设置适配器
-        mView_pager.setAdapter(myPagerAdapter);
-//        mView_pager.setOffscreenPageLimit(4);
-        //设置viewpager不可滑动
-        //mView_pager_space.setCanScroll(false);
-        //tablayout关联tablayout和viewpager实现联动
-        mTablayout.setupWithViewPager(mView_pager);
-        for (int i = 0; i < conts.length; i++) {
-            mTablayout.getTabAt(i).setText(conts[i]);
-        }
+        mData = new ArrayList();
+        LvAcceptAdapter acceptAdapter = new LvAcceptAdapter(getContext(), mData);
+        lv_tour.setAdapter(acceptAdapter);
+        lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //查看详情
+                InstAndRepInfo.ApplylistBean applylistBean = mData.get(i);
+                String ordertype = applylistBean.getOrdertype();
+                if (null != ordertype && "".equals(ordertype)) {
+                    if (ordertype.contains("配送")) {
+                        mKind = "0";
+                    } else if (ordertype.contains("安装")) {
+                        mKind = "1";
+                    } else if (ordertype.contains("维修")) {
+                        mKind = "2";
+                    }
+                    new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(applylistBean.getId());
+                } else {
+                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
+                }
+            }
+        });
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -104,26 +102,23 @@ public class ReceFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取待接单
-//        getPendOrder();
+        //getPendOrder();
     }
 
     //获取待接单
     private void getPendOrder() {
-        if ("0".equals(mKind)) {
-            //获取配送单
-            getPeiSong();
-        } else if ("1".equals(mKind)) {
-            //获取安装待接单
-            getAzInfo();
-        } else if ("2".equals(mKind)) {
-            //获取维修待接单
-            getWxInfo();
-        }
+        img_no_msg.setVisibility(View.VISIBLE);
+        getOrderInfo();
     }
 
-    private void getWxInfo() {
+    private void getOrderInfo() {
+        if (null == mData) {
+            mData = new ArrayList();
+        } else {
+            mData.clear();
+        }
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        String wxUrl = NetConfig.SELECTAPPLYWX;
+        String wxUrl = NetConfig.SELECTALLAPPLY;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", MyApplication.userID);
         HttpOkhUtils.getInstance().doGetWithParams(wxUrl, params, new HttpOkhUtils.HttpCallBack() {
@@ -139,93 +134,17 @@ public class ReceFragment extends Fragment {
                 ProgressDialogUtil.hideDialog();
                 smt_refresh.finishRefresh();
                 if (code != 200) {
-                    ToastUtils.showToast(getContext(), code + "网络连接错误");
+                    ToastUtils.showToast(getContext(), code + "网络错误");
                     return;
                 }
                 Gson gson = new Gson();
                 InstAndRepInfo instInfo = gson.fromJson(resbody, InstAndRepInfo.class);
                 int result = instInfo.getResult();
                 if (result == 1) {
-                    List<InstAndRepInfo.OrderazlistBean> orderazlist = instInfo.getOrderazlist();
-                    robFragment.setDataList(orderazlist);
-                    List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
-                    planFragment.setDataList(apply);
-                } else {
-                    ToastUtils.showToast(getContext(), "未获取到维修单");
+                    List<InstAndRepInfo.ApplylistBean> applylist = instInfo.getApplylist();
+                    mData.addAll(applylist);
                 }
-            }
-        });
-    }
-
-    private void getAzInfo() {
-        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        String azUrl = NetConfig.SELECTAPPLY;
-        RequestParamsFM params = new RequestParamsFM();
-        params.put("id", MyApplication.userID);
-        HttpOkhUtils.getInstance().doGetWithParams(azUrl, params, new HttpOkhUtils.HttpCallBack() {
-            @Override
-            public void onError(Request request, IOException e) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                ToastUtils.showToast(getContext(), "网络连接错误");
-            }
-
-            @Override
-            public void onSuccess(int code, String resbody) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                if (code != 200) {
-                    ToastUtils.showToast(getContext(), code + "网络连接错误");
-                    return;
-                }
-                Gson gson = new Gson();
-                InstAndRepInfo instInfo = gson.fromJson(resbody, InstAndRepInfo.class);
-                int result = instInfo.getResult();
-                if (result == 1) {
-                    List<InstAndRepInfo.OrderazlistBean> orderazlist = instInfo.getOrderazlist();
-                    robFragment.setDataList(orderazlist);
-                    List<InstAndRepInfo.ApplyBean> apply = instInfo.getApply();
-                    planFragment.setDataList(apply);
-                } else {
-                    ToastUtils.showToast(getContext(), "未获取到安装单");
-                }
-            }
-        });
-    }
-
-    private void getPeiSong() {
-        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        String peiSUrl = NetConfig.SELECTAPPLY1;
-        RequestParamsFM params = new RequestParamsFM();
-        params.put("id", MyApplication.userID);
-        params.put("psstatus", "0");
-        HttpOkhUtils.getInstance().doGetWithParams(peiSUrl, params, new HttpOkhUtils.HttpCallBack() {
-            @Override
-            public void onError(Request request, IOException e) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                ToastUtils.showToast(getContext(), "网络连接错误");
-            }
-
-            @Override
-            public void onSuccess(int code, String resbody) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                if (code != 200) {
-                    ToastUtils.showToast(getContext(), code + "网络连接错误");
-                    return;
-                }
-                Gson gson = new Gson();
-                PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
-                int result = peiSInfo.getResult();
-                if (result == 1) {
-                    List<PeiSInfo.OrderazlistBean> orderazlist = peiSInfo.getOrderazlist();//抢单
-                    robFragment.setDataList(orderazlist);
-                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();//排单
-                    planFragment.setDataList(apply);
-                } else {
-                    ToastUtils.showToast(getContext(), "未获取到配送单");
-                }
+                ToastUtils.showToast(getContext(), instInfo.getMessage());
             }
         });
     }

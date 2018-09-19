@@ -19,9 +19,6 @@ import com.bt.andy.sanlianASxcx.utils.ToastUtils;
 import com.bt.andy.sanlianASxcx.viewmodle.CustomDatePicker;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,13 +46,17 @@ public class GetOrderDetailInfoUtil {
     }
 
     public void showMoreInfo(String orderID) {
+        if (null == mKind || "".equals(mKind)) {
+            ToastUtils.showToast(mContext, "该订单未填写类别");
+            return;
+        }
         //获取订单详情
         getMoreOrderInfo(orderID);
     }
 
     //搜索订单详情
     private void getMoreOrderInfo(String orderID) {
-        ProgressDialogUtil.startShow(mContext, "正在搜索");
+        ProgressDialogUtil.startShow(mContext, "正在获取详情...");
         String detailUrl = NetConfig.DETAIL;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
@@ -70,16 +71,16 @@ public class GetOrderDetailInfoUtil {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    ToastUtils.showToast(mContext, "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();
                 try {
-                    JSONArray jsonArray = new JSONArray(resbody);
-                    DetailOrderInfo detailInfo = gson.fromJson(jsonArray.get(0).toString(), DetailOrderInfo.class);
+                    DetailOrderInfo detailInfo = gson.fromJson(resbody, DetailOrderInfo.class);
+                    DetailOrderInfo.ApplylistBean applylistBean = detailInfo.getApplylist().get(0);
                     //展示订单详情
-                    showMoreInfo(detailInfo);
-                } catch (JSONException e) {
+                    showMoreInfo(applylistBean);
+                } catch (Exception e) {
                     e.printStackTrace();
                     ToastUtils.showToast(mContext, "获取订单详情失败");
                 }
@@ -87,7 +88,7 @@ public class GetOrderDetailInfoUtil {
         });
     }
 
-    private void showMoreInfo(final DetailOrderInfo detailInfo) {
+    private void showMoreInfo(final DetailOrderInfo.ApplylistBean detailInfo) {
         final AlertDialog dialog = new AlertDialog.Builder(mContext).create();
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View v = inflater.inflate(R.layout.alert_ps_jd, null);
@@ -134,7 +135,7 @@ public class GetOrderDetailInfoUtil {
             });
         }
         tv_pm.setText(detailInfo.getPinming());
-        tv_num.setText(detailInfo.getQty());
+        tv_num.setText(detailInfo.getQty());//数量
         tv_address.setText(detailInfo.getFaddress());
         tv_date.setText(detailInfo.getFgodate());
         tv_jdate.setText(detailInfo.getFdate());
@@ -192,6 +193,7 @@ public class GetOrderDetailInfoUtil {
             }
         });
     }
+
     private String getNowDate() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         String data = simpleDateFormat.format(new Date());

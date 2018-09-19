@@ -1,5 +1,6 @@
 package com.bt.andy.sanlianASxcx.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
-import com.bt.andy.sanlianASxcx.BaseActivity;
 import com.bt.andy.sanlianASxcx.MainActivity;
 import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
@@ -38,7 +38,7 @@ import okhttp3.Request;
  * @更新描述 ${TODO}
  */
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends Activity implements View.OnClickListener {
     private Button   bt_driver;//司机登录按钮
     private EditText edit_num, edit_psd;
     private CheckBox ck_remPas;
@@ -48,7 +48,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_actiivty);
-//        MyApplication.flag = 0;
+        MyApplication.flag = 0;
         getView();
         setData();
     }
@@ -115,7 +115,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         RequestParamsFM params = new RequestParamsFM();
         params.put("username", name);
         params.put("password", psd);
-        HttpOkhUtils.getInstance().doPost(loginUrl, params, new HttpOkhUtils.HttpCallBack() {
+        HttpOkhUtils.getInstance().doGetWithParams(loginUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 
 import java.util.List;
@@ -22,14 +22,12 @@ import java.util.List;
  */
 
 public class LvComplAdapter extends BaseAdapter {
-    private Context mContext;
-    private List    mList;
-    private String  mKind;
+    private Context                      mContext;
+    private List<PeiSInfo.ApplylistBean> mList;
 
-    public LvComplAdapter(Context context, List list, String kind) {
+    public LvComplAdapter(Context context, List<PeiSInfo.ApplylistBean> list) {
         this.mContext = context;
         this.mList = list;
-        this.mKind = kind;
     }
 
     @Override
@@ -53,6 +51,8 @@ public class LvComplAdapter extends BaseAdapter {
         if (null == view) {
             viewholder = new MyViewholder();
             view = View.inflate(mContext, R.layout.adpter_tour, null);
+            viewholder.img_kind = view.findViewById(R.id.img_kind);
+            viewholder.img_type = view.findViewById(R.id.img_type);
             viewholder.tv_num = view.findViewById(R.id.tv_num);
             viewholder.tv_address = view.findViewById(R.id.tv_address);
             viewholder.tv_cont = view.findViewById(R.id.tv_cont);
@@ -70,27 +70,32 @@ public class LvComplAdapter extends BaseAdapter {
         viewholder.tv_accept.setVisibility(View.GONE);
         viewholder.tv_call_phone.setVisibility(View.GONE);
         viewholder.tv_compl.setVisibility(View.GONE);
-        if ("0".equals(mKind)) {
-            PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-            viewholder.tv_num.setText(bean.getForderno());
-            viewholder.tv_address.setText(bean.getFaddress());
-            viewholder.tv_cont.setText(bean.getFpeople());
-            viewholder.tv_contPhone.setText(bean.getFtel());
-            viewholder.tv_warn.setText(bean.getSpecial_note());
-        } else {
-            AnzYuyueInfo info = (AnzYuyueInfo) mList.get(i);
-            viewholder.tv_num.setText(info.getForderno());
-            viewholder.tv_address.setText(info.getFaddress());
-            viewholder.tv_cont.setText(info.getFpeople());
-            viewholder.tv_contPhone.setText(info.getFtel());
-            viewholder.tv_warn.setText(info.getSpecial_note());
-        }
+        viewholder.img_type.setVisibility(View.GONE);
 
+        PeiSInfo.ApplylistBean applylistBean = mList.get(i);
+        viewholder.tv_num.setText(applylistBean.getForderno());
+        viewholder.tv_address.setText(applylistBean.getFaddress());
+        viewholder.tv_cont.setText(applylistBean.getFpeople());
+        viewholder.tv_contPhone.setText(applylistBean.getFtel());
+        viewholder.tv_warn.setText(applylistBean.getSpecial_note());
+
+        String ordertype = applylistBean.getOrdertype();
+        if (ordertype.contains("配送")) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_peisong);
+        } else {
+            if (ordertype.contains("安装")) {
+                viewholder.img_kind.setImageResource(R.drawable.icon_anzhuang);
+            } else {
+                viewholder.img_kind.setImageResource(R.drawable.icon_weixiu);
+            }
+
+        }
         return view;
     }
 
     private class MyViewholder {
-        View     view_line;
+        View      view_line;
+        ImageView img_kind, img_type;
         TextView tv_accept, tv_call_phone, tv_compl, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 }

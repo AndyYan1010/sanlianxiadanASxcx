@@ -2,19 +2,18 @@ package com.bt.andy.sanlianASxcx.fragment;
 
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.R;
-import com.bt.andy.sanlianASxcx.adapter.IconAdapter;
+import com.bt.andy.sanlianASxcx.adapter.MyPagerAdapter;
+import com.bt.andy.sanlianASxcx.viewmodle.MyFixedViewpager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @创建者 AndyYan
@@ -26,10 +25,11 @@ import java.util.List;
  */
 
 public class Home_F extends Fragment {
-    private View         mRootView;
-    private TextView     mTv_title;
-    private RecyclerView mRecy_icon;
-    private IconAdapter  mIconAdapter;
+    private View             mRootView;
+    private TextView         mTv_title;
+    private TabLayout        mTablayout;//导航标签
+    private MyFixedViewpager mView_pager;//自我viewpager可实现禁止滑动
+    private String[] conts = {"待接单", "待提货", "上门服务", "服务完成"};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,19 +41,39 @@ public class Home_F extends Fragment {
 
     private void initView() {
         mTv_title = mRootView.findViewById(R.id.tv_title);
-        mRecy_icon = mRootView.findViewById(R.id.recy_icon);
+        mTablayout = mRootView.findViewById(R.id.tablayout);
+        mView_pager = mRootView.findViewById(R.id.view_pager);
     }
 
     private void initData() {
         mTv_title.setText("主页");
-        GridLayoutManager mGridManager = new GridLayoutManager(getContext(), 2);
-        mRecy_icon.setLayoutManager(mGridManager);
-        List<String> mData = new ArrayList<>();
-        mData.add("配送");
-        mData.add("安装");
-        mData.add("维修");
-        mIconAdapter = new IconAdapter(getContext(), mData);
-        mRecy_icon.setAdapter(mIconAdapter);
-    }
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        // 装填
+        //待接单界面
+        ReceFragment tourPlanFragment = new ReceFragment();
+        fragments.add(tourPlanFragment);
+        //待预约界面
+        OrderFragment orderFragment = new OrderFragment();
+        fragments.add(orderFragment);
+        //上门服务界面
+        ServiceFragment serviceFragment = new ServiceFragment();
+        fragments.add(serviceFragment);
+        //服务完成界面
+        ComplFragment complFragment = new ComplFragment();
+        fragments.add(complFragment);
 
+        // 创建ViewPager适配器
+        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getFragmentManager());
+        myPagerAdapter.setFragments(fragments);
+        // 给ViewPager设置适配器
+        mView_pager.setAdapter(myPagerAdapter);
+        //        mView_pager.setOffscreenPageLimit(4);
+        //设置viewpager不可滑动
+        //mView_pager_space.setCanScroll(false);
+        //tablayout关联tablayout和viewpager实现联动
+        mTablayout.setupWithViewPager(mView_pager);
+        for (int i = 0; i < conts.length; i++) {
+            mTablayout.getTabAt(i).setText(conts[i]);
+        }
+    }
 }

@@ -10,12 +10,12 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.SaomiaoUIActivity;
-import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.utils.HttpOkhUtils;
 import com.bt.andy.sanlianASxcx.utils.ProgressDialogUtil;
@@ -39,15 +39,13 @@ import okhttp3.Request;
  */
 
 public class LvOrderAdapter extends BaseAdapter {
-    private Context mContext;
-    private List    mList;
-    private String  mKind;
-    private int     which;
+    private Context                      mContext;
+    private List<PeiSInfo.ApplylistBean> mList;
+    private int                          which;
 
-    public LvOrderAdapter(Context context, List list, String kind) {
+    public LvOrderAdapter(Context context, List<PeiSInfo.ApplylistBean> list) {
         this.mContext = context;
         this.mList = list;
-        this.mKind = kind;
     }
 
     @Override
@@ -71,6 +69,8 @@ public class LvOrderAdapter extends BaseAdapter {
         if (null == view) {
             viewholder = new MyViewholder();
             view = View.inflate(mContext, R.layout.adpter_tour, null);
+            viewholder.img_kind = view.findViewById(R.id.img_kind);
+            viewholder.img_type = view.findViewById(R.id.img_type);
             viewholder.tv_num = view.findViewById(R.id.tv_num);
             viewholder.tv_address = view.findViewById(R.id.tv_address);
             viewholder.tv_cont = view.findViewById(R.id.tv_cont);
@@ -86,27 +86,31 @@ public class LvOrderAdapter extends BaseAdapter {
         viewholder.view_line.setBackgroundColor(mContext.getResources().getColor(R.color.orange));
         viewholder.tv_accept.setBackgroundResource(R.drawable.bg_round_ora);
         viewholder.tv_call_phone.setBackgroundResource(R.drawable.bg_round_ora);
-        if ("0".equals(mKind)) {
+        viewholder.img_type.setVisibility(View.GONE);
+
+        PeiSInfo.ApplylistBean applylistBean = mList.get(i);
+        viewholder.tv_num.setText(applylistBean.getForderno());
+        viewholder.tv_address.setText(applylistBean.getFaddress());
+        viewholder.tv_cont.setText(applylistBean.getFpeople());
+        viewholder.tv_contPhone.setText(applylistBean.getFtel());
+        viewholder.tv_warn.setText(applylistBean.getSpecial_note());
+
+        String ordertype = applylistBean.getOrdertype();
+        if (ordertype.contains("配送")) {
+            viewholder.img_kind.setImageResource(R.drawable.icon_peisong);
             viewholder.tv_accept.setText("提货");
             viewholder.tv_call_phone.setText("打电话");
-            final PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mList.get(i);
-            viewholder.tv_num.setText(bean.getForderno());
-            viewholder.tv_address.setText(bean.getFaddress());
-            viewholder.tv_cont.setText(bean.getFpeople());
-            viewholder.tv_contPhone.setText(bean.getFtel());
-            viewholder.tv_warn.setText(bean.getSpecial_note());
             viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //提货
-                    getPsGoods(((PeiSInfo.ApplyBean) mList.get(i)).getId(), i);
+                    getPsGoods(mList.get(i).getId(), i);
                 }
             });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final String ftel = ((PeiSInfo.ApplyBean) mList.get(i)).getFtel();
-                    //                    String orderID = ((PeiSInfo.ApplyBean) mList.get(i)).getId();
+                    final String ftel = mList.get(i).getFtel();
                     if (null == ftel || "".equals(ftel)) {
                         ToastUtils.showToast(mContext, "该订单没有留存电话");
                         return;
@@ -115,21 +119,28 @@ public class LvOrderAdapter extends BaseAdapter {
                 }
             });
         } else {
+            if (ordertype.contains("安装")) {
+                viewholder.img_kind.setImageResource(R.drawable.icon_anzhuang);
+            } else {
+                viewholder.img_kind.setImageResource(R.drawable.icon_weixiu);
+            }
             viewholder.tv_accept.setText("扫码");
             viewholder.tv_call_phone.setText("打电话");
-            //            if ("1".equals(mKind)) {//安装
-            final AnzYuyueInfo anzYuyueInfo = (AnzYuyueInfo) mList.get(i);
-            viewholder.tv_num.setText(anzYuyueInfo.getForderno());
-            viewholder.tv_address.setText(anzYuyueInfo.getFaddress());
-            viewholder.tv_cont.setText(anzYuyueInfo.getFpeople());
-            viewholder.tv_contPhone.setText(anzYuyueInfo.getFtel());
-            viewholder.tv_warn.setText(anzYuyueInfo.getSpecial_note());
-            String fbstatus = anzYuyueInfo.getFbstatus();
+            String fbstatus = applylistBean.getFbstatus();
+            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    which = i;
+                    //扫描二维码
+                    //动态申请照相机权限,开启照相机
+                    scanningCode();
+                }
+            });
             viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String phoneNum = ((AnzYuyueInfo) mList.get(i)).getFtel();
-                    String orderID = ((AnzYuyueInfo) mList.get(i)).getId();
+                    String phoneNum = mList.get(i).getFtel();
+                    String orderID = mList.get(i).getId();
                     //拨打电话
                     if (null == phoneNum || "".equals(phoneNum)) {
                         ToastUtils.showToast(mContext, "该订单没有留存电话");
@@ -144,41 +155,17 @@ public class LvOrderAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View view) {
                         //预约更改成上门服务状态
-                        anzUpToService(anzYuyueInfo.getId(), i);
+                        upToService(mList.get(i).getId(), i);
                     }
                 });
             }
-            viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    which = i;
-                    //扫描二维码
-                    //动态申请照相机权限,开启照相机
-                    scanningCode();
-                }
-            });
-            //            }
-            //            else {//维修
-            //                //TODO:
-            //                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-            //                    @Override
-            //                    public void onClick(View view) {
-            //                        String phoneNum = "";
-            //                        //拨打电话
-            //                        if (null == phoneNum || "".equals(phoneNum)) {
-            //                            ToastUtils.showToast(mContext, "该订单没有留存电话");
-            //                            return;
-            //                        }
-            //                        ShowCallUtil.showCallDialog(mContext, phoneNum, "");
-            //                    }
-            //                });
-            //            }
         }
         return view;
     }
 
     private class MyViewholder {
-        View     view_line;
+        View      view_line;
+        ImageView img_kind, img_type;
         TextView tv_accept, tv_call_phone, tv_num, tv_address, tv_cont, tv_contPhone, tv_warn;
     }
 
@@ -198,12 +185,12 @@ public class LvOrderAdapter extends BaseAdapter {
         }
     }
 
-    private void anzUpToService(String orderID, final int item) {
+    private void upToService(String orderID, final int item) {
         ProgressDialogUtil.startShow(mContext, "正在提交，请稍后...");
-        String updatetype1Url = NetConfig.UPDATETYPE1;
+        String upToServiceUrl = NetConfig.UPDATETYPE1;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
-        HttpOkhUtils.getInstance().doGetWithParams(updatetype1Url, params, new HttpOkhUtils.HttpCallBack() {
+        HttpOkhUtils.getInstance().doGetWithParams(upToServiceUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();
@@ -214,7 +201,7 @@ public class LvOrderAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, code + "网络连接错误");
+                    ToastUtils.showToast(mContext, "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();
@@ -248,7 +235,7 @@ public class LvOrderAdapter extends BaseAdapter {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(mContext, code + "网络错误");
+                    ToastUtils.showToast(mContext, "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();

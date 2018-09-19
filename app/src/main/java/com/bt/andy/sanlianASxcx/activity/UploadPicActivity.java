@@ -275,7 +275,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                 } else if ("2".equals(resbody)) {
                     ProgressDialogUtil.hideDialog();
                     ToastUtils.showToast(UploadPicActivity.this, "图片上传失败，二维码不匹配");
-                }else {
+                } else {
                     ProgressDialogUtil.hideDialog();
                     ToastUtils.showToast(UploadPicActivity.this, "图片上传失败");
                 }
@@ -313,9 +313,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                         ProgressDialogUtil.hideDialog();
                         finish();
                     }
-                }else {
+                } else {
                     ProgressDialogUtil.hideDialog();
-                    ToastUtils.showToast(UploadPicActivity.this, "上传结果"+resbody);
+                    ToastUtils.showToast(UploadPicActivity.this, "上传结果" + resbody);
                 }
             }
         });

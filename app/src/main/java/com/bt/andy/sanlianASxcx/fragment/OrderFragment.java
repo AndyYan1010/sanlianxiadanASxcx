@@ -16,7 +16,6 @@ import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.NetConfig;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.adapter.LvOrderAdapter;
-import com.bt.andy.sanlianASxcx.messegeInfo.AnzYuyueInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.LoginInfo;
 import com.bt.andy.sanlianASxcx.messegeInfo.PeiSInfo;
 import com.bt.andy.sanlianASxcx.util.GetOrderDetailInfoUtil;
@@ -29,9 +28,6 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,14 +45,14 @@ import okhttp3.Request;
  */
 
 public class OrderFragment extends Fragment {
-    private View               mRootView;
-    private SmartRefreshLayout smt_refresh;
-    private ListView           lv_tour;
-    private List               mData;
-    private LvOrderAdapter     tourPlanAdapter;
-    private String             mKind;
+    private View                         mRootView;
+    private SmartRefreshLayout           smt_refresh;
+    private ListView                     lv_tour;
+    private List<PeiSInfo.ApplylistBean> mData;
+    private LvOrderAdapter               tourPlanAdapter;
     private int REQUEST_CODE = 1002;//接收扫描结果
     private ImageView img_no_msg;
+    private String mKind = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,7 +66,6 @@ public class OrderFragment extends Fragment {
         smt_refresh = (SmartRefreshLayout) mRootView.findViewById(R.id.smt_refresh);
         img_no_msg = mRootView.findViewById(R.id.img_no_msg);
         lv_tour = (ListView) mRootView.findViewById(R.id.lv_tour);
-        mKind = getActivity().getIntent().getStringExtra("kind");
     }
 
     @Override
@@ -83,24 +78,27 @@ public class OrderFragment extends Fragment {
     private void initData() {
         img_no_msg.setVisibility(View.VISIBLE);
         mData = new ArrayList();
-        tourPlanAdapter = new LvOrderAdapter(getContext(), mData, mKind);
+        tourPlanAdapter = new LvOrderAdapter(getContext(), mData);
         lv_tour.setAdapter(tourPlanAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String orderID = "";
-                if ("0".equals(mKind)) {
-                    PeiSInfo.ApplyBean bean = (PeiSInfo.ApplyBean) mData.get(i);
-                    orderID = bean.getId();
+                PeiSInfo.ApplylistBean applylistBean = mData.get(i);
+                String ordertype = applylistBean.getOrdertype();
+                if (null != ordertype && "".equals(ordertype)) {
+                    if (ordertype.contains("配送")) {
+                        mKind = "0";
+                    } else if (ordertype.contains("安装")) {
+                        mKind = "1";
+                    } else if (ordertype.contains("维修")) {
+                        mKind = "2";
+                    }
+                    new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(applylistBean.getId());
                 } else {
-                    AnzYuyueInfo info = (AnzYuyueInfo) mData.get(i);
-                    orderID = info.getId();
+                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
                 }
-                new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(orderID);
             }
         });
-        //获取订单信息
-        getOrderInfo();
         smt_refresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -108,21 +106,14 @@ public class OrderFragment extends Fragment {
                 getOrderInfo();
             }
         });
+        //获取订单信息
+        getOrderInfo();
     }
 
     //获取订单信息
     private void getOrderInfo() {
         img_no_msg.setVisibility(View.VISIBLE);
-        if ("0".equals(mKind)) {
-            //获取提货单
-            getTihuo();
-        } else if ("1".equals(mKind)) {
-            //获取安装预约
-            getAzYuYue();
-        } else if ("2".equals(mKind)) {
-            //获取维修预约
-            getWxYuYue();
-        }
+        getOrderList();
     }
 
     @Override
@@ -141,9 +132,9 @@ public class OrderFragment extends Fragment {
                     //获取扫描信息，填写到对应et
                     if (requestCode == REQUEST_CODE) {
                         int which = tourPlanAdapter.getWhich();
-                        AnzYuyueInfo info = (AnzYuyueInfo) mData.get(which);
+                        PeiSInfo.ApplylistBean applylistBean = mData.get(which);
                         //提交二维码信息
-                        sendQcode(info.getId(), result);
+                        sendQcode(applylistBean.getId(), result);
                     }
                 } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
                     Toast.makeText(getContext(), "解析二维码失败", Toast.LENGTH_LONG).show();
@@ -184,95 +175,16 @@ public class OrderFragment extends Fragment {
         });
     }
 
-    private void getWxYuYue() {
+    private void getOrderList() {
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
-        String wxdyyUrl = NetConfig.DAIYUYUEWX;
+        if (null == mData) {
+            mData = new ArrayList();
+        } else {
+            mData.clear();
+        }
+        String peiSUrl = NetConfig.DAIYUYUE;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", MyApplication.userID);
-        HttpOkhUtils.getInstance().doGetWithParams(wxdyyUrl, params, new HttpOkhUtils.HttpCallBack() {
-            @Override
-            public void onError(Request request, IOException e) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                ToastUtils.showToast(getContext(), "网络连接错误");
-            }
-
-            @Override
-            public void onSuccess(int code, String resbody) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                if (code != 200) {
-                    ToastUtils.showToast(getContext(), "网络连接错误" + code);
-                    return;
-                }
-                Gson gson = new Gson();
-                try {
-                    JSONArray jsonArray = new JSONArray(resbody);
-                    if (jsonArray.length() > 0) {
-                        img_no_msg.setVisibility(View.GONE);
-                    }
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
-                        mData.add(anzYYInfo);
-                    }
-                    tourPlanAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToastUtils.showToast(getContext(), "数据解析失败");
-                }
-            }
-        });
-    }
-
-    private void getAzYuYue() {
-        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
-        String azdyyUrl = NetConfig.DAIYUYUE;
-        RequestParamsFM params = new RequestParamsFM();
-        params.put("id", MyApplication.userID);
-        HttpOkhUtils.getInstance().doGetWithParams(azdyyUrl, params, new HttpOkhUtils.HttpCallBack() {
-            @Override
-            public void onError(Request request, IOException e) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                ToastUtils.showToast(getContext(), "网络连接错误");
-            }
-
-            @Override
-            public void onSuccess(int code, String resbody) {
-                ProgressDialogUtil.hideDialog();
-                smt_refresh.finishRefresh();
-                if (code != 200) {
-                    ToastUtils.showToast(getContext(), "网络连接错误" + code);
-                    return;
-                }
-                Gson gson = new Gson();
-                try {
-                    JSONArray jsonArray = new JSONArray(resbody);
-                    if (jsonArray.length() > 0) {
-                        img_no_msg.setVisibility(View.GONE);
-                    }
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        AnzYuyueInfo anzYYInfo = gson.fromJson(jsonArray.get(i).toString(), AnzYuyueInfo.class);
-                        mData.add(anzYYInfo);
-                    }
-                    tourPlanAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToastUtils.showToast(getContext(), "数据解析失败");
-                }
-            }
-        });
-    }
-
-    private void getTihuo() {
-        ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        mData.clear();
-        String peiSUrl = NetConfig.SELECTAPPLY1;
-        RequestParamsFM params = new RequestParamsFM();
-        params.put("id", MyApplication.userID);
-        params.put("psstatus", "1");
         HttpOkhUtils.getInstance().doGetWithParams(peiSUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
@@ -286,23 +198,21 @@ public class OrderFragment extends Fragment {
                 ProgressDialogUtil.hideDialog();
                 smt_refresh.finishRefresh();
                 if (code != 200) {
-                    ToastUtils.showToast(getContext(), "网络连接错误" + code);
+                    ToastUtils.showToast(getContext(), "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();
                 PeiSInfo peiSInfo = gson.fromJson(resbody, PeiSInfo.class);
                 int result = peiSInfo.getResult();
                 if (result == 1) {
-                    List<PeiSInfo.ApplyBean> apply = peiSInfo.getApply();
-                    if (apply.size() > 0) {
+                    List<PeiSInfo.ApplylistBean> applylist = peiSInfo.getApplylist();
+                    if (applylist.size() > 0) {
                         img_no_msg.setVisibility(View.GONE);
                     }
-                    for (PeiSInfo.ApplyBean bean : apply) {
-                        mData.add(bean);
-                    }
+                    mData.addAll(applylist);
                     tourPlanAdapter.notifyDataSetChanged();
                 } else {
-                    ToastUtils.showToast(getContext(), "获取配送单失败");
+                    ToastUtils.showToast(getContext(), "未获取订单信息");
                 }
             }
         });

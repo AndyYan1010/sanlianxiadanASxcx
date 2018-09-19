@@ -12,8 +12,21 @@ package com.bt.andy.sanlianASxcx;
 public class NetConfig {
     //服务器总地址
     //        public static String ROOT = "http://192.168.10.99:8081/page/";
-//    public static String ROOT = "https://wxgzh.0746dq.com/slpdJK/page/";
-    public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
+    public static String ROOT = "http://192.168.10.137:8081/page/";
+    //    public static String ROOT = "https://wxgzh.0746dq.com/slpdJK/page/";
+    //    public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
+
+    //查看详情
+    public static String DETAIL         = ROOT + "detail.do";
+    //查询所有订单（抢单、排单）
+    public static String SELECTALLAPPLY = ROOT + "selectapply.do";
+    //查询所有待预约
+    public static String DAIYUYUE       = ROOT + "daiyuyue.do";
+    //查询所有上门服务
+    public static String SMFW           = ROOT + "smfw.do";
+    //查询所有服务完成
+    public static String COMPLETE1      = ROOT + "complete1.do";
+
 
     //用户登录
     public static String LOGINURL     = ROOT + "login.do";
@@ -30,11 +43,11 @@ public class NetConfig {
     //查询待接单
     public static String SELECTAPPLY = ROOT + "selectapply.do";
     //查询待预约
-    public static String DAIYUYUE    = ROOT + "daiyuyue.do";
+    //    public static String DAIYUYUE    = ROOT + "daiyuyue.do";
     //更改成上门服务
     public static String UPDATETYPE1 = ROOT + "Updatetype1.do";
     //查询上门服务
-    public static String SMFW        = ROOT + "smfw.do";
+    //    public static String SMFW        = ROOT + "smfw.do";
     //上门服务完成
     public static String WANCHENG    = ROOT + "wancheng.do";
     //查询服务完成
@@ -68,10 +81,9 @@ public class NetConfig {
     public static String WANCHENGDATE = ROOT + "wanchengdate.do";
     //签到
     public static String SHANGMEN     = ROOT + "shangmen.do";
-    //查看详情
-    public static String DETAIL       = ROOT + "detail.do";
+
     //待预约中，提交扫码信息
-    public static String SELECTEWM    = ROOT + "selectewm.do";
+    public static String SELECTEWM  = ROOT + "selectewm.do";
     //更改上门时间
-    public static String UPDATEDATE   = ROOT + "UpdateDate.do";
+    public static String UPDATEDATE = ROOT + "UpdateDate.do";
 }
