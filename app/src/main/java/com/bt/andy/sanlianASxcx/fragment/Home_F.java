@@ -29,7 +29,7 @@ public class Home_F extends Fragment {
     private TextView         mTv_title;
     private TabLayout        mTablayout;//导航标签
     private MyFixedViewpager mView_pager;//自我viewpager可实现禁止滑动
-    private String[] conts = {"待接单", "待提货", "上门服务", "服务完成"};
+    private String[] conts = {"待接单", "待预约", "上门服务", "服务完成"};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

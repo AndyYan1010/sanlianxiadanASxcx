@@ -61,7 +61,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private AddPicAdapter     mAddAdapter;
     private int               recordTime;//记录第几次上传
     private ImageView         img_scan;
-    private int IMAGE                              = 10086;//获取图片地址，请求值
+    private              int IMAGE     = 10086;//获取图片地址，请求值
+    private static final int SHOT_CODE = 20;//调用系统相机
+    private String mRote;//临时记录拍照的照片地址
     private int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;//申请照相机权限结果
     private int REQUEST_CODE                       = 1003;//接收扫描结果
     private String         scanCode;
@@ -186,6 +188,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
             showImage(imagePath);
             c.close();
         }
+        if (requestCode == SHOT_CODE && resultCode == Activity.RESULT_OK) {
+            showImage(mRote);
+        }
         /**
          * 处理二维码扫描结果
          */
@@ -223,24 +228,13 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
+    public void setPtRote(String rote) {
+        this.mRote = rote;
+    }
+
     //加载图片
     private void showImage(String imgPath) {
         Bitmap bm = BitmapFactory.decodeFile(imgPath);
-        //        File file = new File(imgPath);
-        //        //压缩图片
-        //        File file = new File(imgPath);
-        //        File newFile = new CompressHelper.Builder(this)
-        //                .setMaxWidth(720)  // 默认最大宽度为720
-        //                .setMaxHeight(960) // 默认最大高度为960
-        //                .setQuality(100)    // 默认压缩质量为80
-        //                .setFileName("sendPic") // 设置你需要修改的文件名
-        //                .setCompressFormat(Bitmap.CompressFormat.JPEG) // 设置默认压缩为jpg格式
-        //                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
-        //                        Environment.DIRECTORY_PICTURES).getAbsolutePath())
-        //                .build()
-        //                .compressToFile(file);
-        //        Bitmap bm = BitmapFactory.decodeFile(newFile.getPath());
-
         //添加到bitmap集合中
         mBitmapList.add(bm);
         filePathList.add(imgPath);

@@ -85,7 +85,9 @@ public class OrderFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 PeiSInfo.ApplylistBean applylistBean = mData.get(i);
                 String ordertype = applylistBean.getOrdertype();
-                if (null != ordertype && "".equals(ordertype)) {
+                if (null == ordertype || "".equals(ordertype)) {
+                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
+                } else {
                     if (ordertype.contains("配送")) {
                         mKind = "0";
                     } else if (ordertype.contains("安装")) {
@@ -94,8 +96,6 @@ public class OrderFragment extends Fragment {
                         mKind = "2";
                     }
                     new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(applylistBean.getId());
-                } else {
-                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
                 }
             }
         });
@@ -106,6 +106,7 @@ public class OrderFragment extends Fragment {
                 getOrderInfo();
             }
         });
+        smt_refresh.setEnableLoadMore(false);
         //获取订单信息
         getOrderInfo();
     }

@@ -320,7 +320,7 @@ public class LvServiceAdapter extends BaseAdapter {
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
         params.put("status", status);
-        HttpOkhUtils.getInstance().doPost(wcUrl, params, new HttpOkhUtils.HttpCallBack() {
+        HttpOkhUtils.getInstance().doGetWithParams(wcUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();

@@ -190,7 +190,7 @@ public class LvAcceptAdapter extends BaseAdapter {
         String yySUrl = NetConfig.YUYUE;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", orderID);
-        HttpOkhUtils.getInstance().doPost(yySUrl, params, new HttpOkhUtils.HttpCallBack() {
+        HttpOkhUtils.getInstance().doGetWithParams(yySUrl, params, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
                 ProgressDialogUtil.hideDialog();

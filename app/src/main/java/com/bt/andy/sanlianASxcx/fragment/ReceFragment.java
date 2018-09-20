@@ -45,6 +45,7 @@ public class ReceFragment extends Fragment {
     private View                               mRootView;
     private SmartRefreshLayout                 smt_refresh;
     private ListView                           lv_tour;
+    private LvAcceptAdapter                    acceptAdapter;
     private List<InstAndRepInfo.ApplylistBean> mData;
     private String                             mKind;
     private ImageView                          img_no_msg;
@@ -65,7 +66,7 @@ public class ReceFragment extends Fragment {
 
     private void initData() {
         mData = new ArrayList();
-        LvAcceptAdapter acceptAdapter = new LvAcceptAdapter(getContext(), mData);
+        acceptAdapter = new LvAcceptAdapter(getContext(), mData);
         lv_tour.setAdapter(acceptAdapter);
         lv_tour.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,7 +74,9 @@ public class ReceFragment extends Fragment {
                 //查看详情
                 InstAndRepInfo.ApplylistBean applylistBean = mData.get(i);
                 String ordertype = applylistBean.getOrdertype();
-                if (null != ordertype && "".equals(ordertype)) {
+                if (null == ordertype ||"".equals(ordertype)) {
+                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
+                } else {
                     if (ordertype.contains("配送")) {
                         mKind = "0";
                     } else if (ordertype.contains("安装")) {
@@ -82,8 +85,6 @@ public class ReceFragment extends Fragment {
                         mKind = "2";
                     }
                     new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(applylistBean.getId());
-                } else {
-                    ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
                 }
             }
         });
@@ -94,15 +95,16 @@ public class ReceFragment extends Fragment {
                 getPendOrder();
             }
         });
+        smt_refresh.setEnableLoadMore(false);
         //获取待接单
-        getPendOrder();
+        //        getPendOrder();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //获取待接单
-        //getPendOrder();
+        getPendOrder();
     }
 
     //获取待接单
@@ -118,7 +120,7 @@ public class ReceFragment extends Fragment {
             mData.clear();
         }
         ProgressDialogUtil.startShow(getContext(), "正在查询，请稍后...");
-        String wxUrl = NetConfig.SELECTALLAPPLY;
+        String wxUrl = NetConfig.SELECTAPPLY;
         RequestParamsFM params = new RequestParamsFM();
         params.put("id", MyApplication.userID);
         HttpOkhUtils.getInstance().doGetWithParams(wxUrl, params, new HttpOkhUtils.HttpCallBack() {
@@ -134,7 +136,7 @@ public class ReceFragment extends Fragment {
                 ProgressDialogUtil.hideDialog();
                 smt_refresh.finishRefresh();
                 if (code != 200) {
-                    ToastUtils.showToast(getContext(), code + "网络错误");
+                    ToastUtils.showToast(getContext(), "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();
@@ -142,7 +144,11 @@ public class ReceFragment extends Fragment {
                 int result = instInfo.getResult();
                 if (result == 1) {
                     List<InstAndRepInfo.ApplylistBean> applylist = instInfo.getApplylist();
+                    if (applylist.size() > 0) {
+                        img_no_msg.setVisibility(View.GONE);
+                    }
                     mData.addAll(applylist);
+                    acceptAdapter.notifyDataSetChanged();
                 }
                 ToastUtils.showToast(getContext(), instInfo.getMessage());
             }

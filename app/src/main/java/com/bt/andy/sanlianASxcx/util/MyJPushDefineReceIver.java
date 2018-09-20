@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 
@@ -39,15 +41,9 @@ import cn.jpush.android.api.JPushInterface;
 public class MyJPushDefineReceIver extends BroadcastReceiver {
     private static final String TAG = "MyReceiver";
     private NotificationManager nm;
-    //    private Context             mContext;
     private SoundPool           mSoundPool;
-    private int                 mDuanSound;
     private int                 mYuluSound;
     private int                 markExamine;
-
-    //    public MyJPushDefineReceIver(Context context) {
-    //        this.mContext = context;
-    //    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -80,53 +76,34 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
     }
 
     private void receivingNotification(Context context, Bundle bundle) {
-        initSoundPool(context);
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
         //        Logger.d(TAG, " title : " + title);
         String message = bundle.getString(JPushInterface.EXTRA_ALERT);
         //        Logger.d(TAG, "message : " + message);
         String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
         //        Logger.d(TAG, "extras : " + extras);
-        /**
-         * 1. 判断当前应用是否在后台运行
-         * 2. 如果是在后台运行，则发出通知栏
-         * 3. 如果是在后台发出长声音
-         * 4. 如果在前台发出短声音
-         */
-        mSoundPool.play(mDuanSound, 1, 1, 0, 0, 1);
+
+        initSoundPool(context);
         //振动
         Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
-        vibrator.vibrate(500);
+        vibrator.vibrate(3000);
+
+        /**
+         * 发出短声音
+         */
+        mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
         //解析extra
         Gson gson = new Gson();
         TuiSongInfo tuiSongInfo = gson.fromJson(extras, TuiSongInfo.class);
         String show_msg = "有" + tuiSongInfo.getNumber() + "笔新的" + tuiSongInfo.getOrdertype() + "待查看";
         //显示通知
         sendNotification(context, show_msg);
-        //        if (isRuninBackground(context)) {
-        //            //发出长声音
-        //            //参数2/3：左右喇叭声音的大小
-        //            mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
-        //        } else {
-        //            //发出短声音
-        //        }
-    }
-
-    private boolean isRuninBackground(Context context) {
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(100);
-        ActivityManager.RunningTaskInfo runningTaskInfo = runningTasks.get(0);
-        if (runningTaskInfo.topActivity.getPackageName().equals(context.getPackageName())) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public void initSoundPool(Context context) {
-        if (null == mSoundPool)
+        if (null == mSoundPool) {
             mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
-        mDuanSound = mSoundPool.load(context, R.raw.yulu, 1);
+        }
         mYuluSound = mSoundPool.load(context, R.raw.yulu, 1);
     }
 
@@ -138,6 +115,13 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
          */
         Intent mainIntent = new Intent(context, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if (message.contains("配送")) {
+            markExamine = 1;
+        } else if (message.contains("安装")) {
+            markExamine = 2;
+        } else {
+            markExamine = 3;
+        }
         //        Intent chatIntent;
         //        if (message.contains("配送")) {
         //            chatIntent = new Intent(context, DistriActivity.class);
@@ -154,6 +138,7 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         //        }
         //        chatIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         //        Intent[] intents = {mainIntent, chatIntent};
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         Intent[] intents = {mainIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(context, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new Notification.Builder(context)
@@ -165,8 +150,20 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
                 .setContentInfo("")
                 .setContentIntent(pendingIntent)
                 .setPriority(Notification.PRIORITY_MAX)
+                .setSound(uri)
                 .build();
         notificationManager.notify(markExamine, notification);
+    }
+
+    private boolean isRuninBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(100);
+        ActivityManager.RunningTaskInfo runningTaskInfo = runningTasks.get(0);
+        if (runningTaskInfo.topActivity.getPackageName().equals(context.getPackageName())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void openNotification(Context context, Bundle bundle) {

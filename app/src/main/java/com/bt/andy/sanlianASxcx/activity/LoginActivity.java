@@ -140,6 +140,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     if ("".equals(isAlias) || !"1".equals(isAlias)) {
                         //推送设置别名
                         setAlias(loginInfo.getId());
+                    } else {
+                        String aliasName = SpUtils.getString(LoginActivity.this, "AliasID", "");
+                        if (!aliasName.equals(loginInfo.getId())) {
+                            //推送设置别名
+                            setAlias(loginInfo.getId());
+                        }
                     }
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
@@ -153,8 +159,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     private void setAlias(String id) {
-        //        String alias = id;//用户id
-        String alias = "9527";
+        String alias = id;//用户id
+        //        String alias = "9527";
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, alias));
     }
@@ -169,6 +175,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     ToastUtils.showToast(LoginActivity.this, "success");
                     SpUtils.putString(LoginActivity.this, "IsAlias", "1");
+                    SpUtils.putString(LoginActivity.this, "AliasID", MyApplication.userID);
                     break;
                 case 6002:
                     logs = "Failed to set alias and tags due to timeout. Try again after 60s.";

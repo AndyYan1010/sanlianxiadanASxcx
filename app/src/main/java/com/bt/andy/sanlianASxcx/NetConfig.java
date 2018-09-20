@@ -11,58 +11,37 @@ package com.bt.andy.sanlianASxcx;
 
 public class NetConfig {
     //服务器总地址
-    //        public static String ROOT = "http://192.168.10.99:8081/page/";
     public static String ROOT = "http://192.168.10.137:8081/page/";
-    //    public static String ROOT = "https://wxgzh.0746dq.com/slpdJK/page/";
     //    public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
 
     //查看详情
     public static String DETAIL         = ROOT + "detail.do";
     //查询所有订单（抢单、排单）
-    public static String SELECTALLAPPLY = ROOT + "selectapply.do";
+    public static String SELECTAPPLY = ROOT + "selectapply.do";
     //查询所有待预约
     public static String DAIYUYUE       = ROOT + "daiyuyue.do";
     //查询所有上门服务
     public static String SMFW           = ROOT + "smfw.do";
     //查询所有服务完成
     public static String COMPLETE1      = ROOT + "complete1.do";
-
+    //所有订单（日期）查询
+    public static String WANCHENGDATE   = ROOT + "wanchengdate.do";
 
     //用户登录
-    public static String LOGINURL     = ROOT + "login.do";
+    public static String LOGINURL = ROOT + "login.do";
     //配送
-    public static String SELECTAPPLY1 = ROOT + "selectapply1.do";
     //更改状态:接单、提货
-    public static String PSWC1        = ROOT + "pswc1.do";
+    public static String PSWC1    = ROOT + "pswc1.do";
     //确认完成
-    public static String PSWC         = ROOT + "pswc.do";
+    public static String PSWC     = ROOT + "pswc.do";
     //提交图片
-    public static String PSIMAGE      = ROOT + "psimage.do";
+    public static String PSIMAGE  = ROOT + "psimage.do";
 
     //安装
-    //查询待接单
-    public static String SELECTAPPLY = ROOT + "selectapply.do";
-    //查询待预约
-    //    public static String DAIYUYUE    = ROOT + "daiyuyue.do";
     //更改成上门服务
     public static String UPDATETYPE1 = ROOT + "Updatetype1.do";
-    //查询上门服务
-    //    public static String SMFW        = ROOT + "smfw.do";
     //上门服务完成
     public static String WANCHENG    = ROOT + "wancheng.do";
-    //查询服务完成
-    public static String FWWC        = ROOT + "fwwc.do";
-
-
-    //维修
-    //待接单
-    public static String SELECTAPPLYWX = ROOT + "selectapplywx.do";
-    //待预约
-    public static String DAIYUYUEWX    = ROOT + "daiyuyuewx.do";
-    //上门服务
-    public static String SMFWWX        = ROOT + "smfwwx.do";
-    //服务完成
-    public static String FWWCWX        = ROOT + "fwwcwx.do";
 
 
     //抢单订单更改状态
@@ -77,10 +56,8 @@ public class NetConfig {
     //提交图片接口2
     public static String INSERTIMG1 = ROOT + "Insertimg1.do";
 
-    //所有订单查询
-    public static String WANCHENGDATE = ROOT + "wanchengdate.do";
     //签到
-    public static String SHANGMEN     = ROOT + "shangmen.do";
+    public static String SHANGMEN = ROOT + "shangmen.do";
 
     //待预约中，提交扫码信息
     public static String SELECTEWM  = ROOT + "selectewm.do";
