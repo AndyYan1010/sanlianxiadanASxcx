@@ -85,6 +85,15 @@ public class InstAndRepInfo {
         private String psstatus;
         private String forderno;
         private String ordertype;
+        /**
+         * warehouse : jsj
+         * fgoods : 北京
+         * fdate : 2018-09
+         */
+
+        private String warehouse;
+        private String fgoods;
+        private String fdate;
 
         public String getFaddress() {
             return faddress;
@@ -180,6 +189,30 @@ public class InstAndRepInfo {
 
         public void setOrdertype(String ordertype) {
             this.ordertype = ordertype;
+        }
+
+        public String getWarehouse() {
+            return warehouse;
+        }
+
+        public void setWarehouse(String warehouse) {
+            this.warehouse = warehouse;
+        }
+
+        public String getFgoods() {
+            return fgoods;
+        }
+
+        public void setFgoods(String fgoods) {
+            this.fgoods = fgoods;
+        }
+
+        public String getFdate() {
+            return fdate;
+        }
+
+        public void setFdate(String fdate) {
+            this.fdate = fdate;
         }
     }
 }

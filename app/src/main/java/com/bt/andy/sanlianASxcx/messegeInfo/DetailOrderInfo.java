@@ -92,8 +92,15 @@ public class DetailOrderInfo {
          * fgodate : 2018-09-20
          */
 
-        private String qty;
+        private int    qty;
         private String fgodate;
+        /**
+         * warehouse : 仓库
+         * fgoods : 货位
+         */
+
+        private String warehouse;
+        private String fgoods;
 
         public String getFaddress() {
             return faddress;
@@ -199,11 +206,11 @@ public class DetailOrderInfo {
             this.psshifu = psshifu;
         }
 
-        public String getQty() {
+        public int getQty() {
             return qty;
         }
 
-        public void setQty(String qty) {
+        public void setQty(int qty) {
             this.qty = qty;
         }
 
@@ -213,6 +220,22 @@ public class DetailOrderInfo {
 
         public void setFgodate(String fgodate) {
             this.fgodate = fgodate;
+        }
+
+        public String getWarehouse() {
+            return warehouse;
+        }
+
+        public void setWarehouse(String warehouse) {
+            this.warehouse = warehouse;
+        }
+
+        public String getFgoods() {
+            return fgoods;
+        }
+
+        public void setFgoods(String fgoods) {
+            this.fgoods = fgoods;
         }
     }
 }

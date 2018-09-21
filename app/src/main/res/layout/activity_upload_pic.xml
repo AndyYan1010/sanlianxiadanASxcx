@@ -28,7 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="机器二维码"
+                    android:text="机器二维码(一)"
                     android:textColor="@color/vm_black_100"
                     android:textSize="16sp"/>
 
@@ -43,6 +43,43 @@
 
             <EditText
                 android:id="@+id/et_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/gray_ef"
+                android:hint="请输入或扫码填入机器二维码"
+                android:minHeight="40dp"
+                android:paddingLeft="5dp"/>
+
+            <RelativeLayout
+                android:id="@+id/rel_scan2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="机器二维码(二)"
+                    android:textColor="@color/vm_black_100"
+                    android:textSize="16sp"/>
+
+                <ImageView
+                    android:id="@+id/img_scan2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/scan_code"/>
+            </RelativeLayout>
+
+            <EditText
+                android:id="@+id/et_code2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

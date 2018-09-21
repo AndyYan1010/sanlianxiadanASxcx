@@ -94,6 +94,8 @@ public class GetOrderDetailInfoUtil {
         View v = inflater.inflate(R.layout.alert_ps_jd, null);
         TextView tv_pm = v.findViewById(R.id.tv_pm);
         TextView tv_num = v.findViewById(R.id.tv_num);
+        TextView tv_stock = v.findViewById(R.id.tv_stock);
+        TextView tv_position = v.findViewById(R.id.tv_position);
         TextView tv_address = v.findViewById(R.id.tv_address);
         final TextView tv_date = v.findViewById(R.id.tv_date);
         TextView tv_jdate = v.findViewById(R.id.tv_jdate);
@@ -109,8 +111,9 @@ public class GetOrderDetailInfoUtil {
                 @Override
                 public void onClick(View view) {
                     String date = String.valueOf(tv_date.getText()).trim();
-                    if (null == date || "--".equals(date)) {
-                        date = "";
+                    if (null == date || "--".equals(date) || "无要求".equals(date)) {
+                        ToastUtils.showToast(mContext, "您未选择更改的日期");
+                        return;
                     }
                     //提交修改信息
                     sendSaveData(dialog, detailInfo.getId(), date);
@@ -135,7 +138,9 @@ public class GetOrderDetailInfoUtil {
             });
         }
         tv_pm.setText(detailInfo.getPinming());
-        tv_num.setText(detailInfo.getQty());//数量
+        tv_num.setText("" + detailInfo.getQty());//数量
+        tv_stock.setText(detailInfo.getWarehouse());
+        tv_position.setText(detailInfo.getFgoods());
         tv_address.setText(detailInfo.getFaddress());
         tv_date.setText(detailInfo.getFgodate());
         tv_jdate.setText(detailInfo.getFdate());

@@ -81,12 +81,12 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
         } else {
             holder.img_delet.setVisibility(View.VISIBLE);
             GlideLoaderUtil.showImageView(mContext, mFileList.get(position - 1), holder.img_add_photo);
-//            holder.img_add_photo.setImageBitmap(mData.get(position));
+            //            holder.img_add_photo.setImageBitmap(mData.get(position));
         }
         holder.img_delet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mData.remove(position);
+                //                mData.remove(position);
                 mFileList.remove(position - 1);
                 notifyDataSetChanged();
             }
@@ -96,7 +96,7 @@ public class AddPicAdapter extends RecyclerView.Adapter<AddPicAdapter.ViewHolder
     @Override
     public int getItemCount() {
         //展示条目数
-        return mData == null ? 0 : mData.size();
+        return mFileList == null ? 0 : mFileList.size() + 1;
     }
 
 

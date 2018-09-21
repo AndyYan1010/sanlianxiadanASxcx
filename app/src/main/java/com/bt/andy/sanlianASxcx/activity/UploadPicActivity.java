@@ -53,26 +53,27 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
     private ImageView    img_back;
     private TextView     tv_title;
     private RecyclerView rec_up_photo;
-    private EditText     et_code, et_fback;
+    private EditText     et_code, et_code2, et_fback;
     private Button            bt_submit;
     private List<Bitmap>      mBitmapList;
     private List<String>      filePathList;
     private GridLayoutManager mLayoutManager;
     private AddPicAdapter     mAddAdapter;
     private int               recordTime;//记录第几次上传
-    private ImageView         img_scan;
+    private ImageView         img_scan, img_scan2;
     private              int IMAGE     = 10086;//获取图片地址，请求值
     private static final int SHOT_CODE = 20;//调用系统相机
     private String mRote;//临时记录拍照的照片地址
     private int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;//申请照相机权限结果
     private int REQUEST_CODE                       = 1003;//接收扫描结果
-    private String         scanCode;
+    private int REQUEST_CODE2                      = 1004;//接收扫描结果
+    private String scanCode, scanCode2;
     private String         markNote;
     private String         orderID;//订单id
     private String         subTimes;
     private String         mKind;
-    private RelativeLayout rel_scan;
-    private TextView       tv_fktt;
+    private RelativeLayout rel_scan, rel_scan2;
+    private TextView tv_fktt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +90,13 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         img_back = (ImageView) findViewById(R.id.img_back);
         tv_title = (TextView) findViewById(R.id.tv_title);
         rel_scan = (RelativeLayout) findViewById(R.id.rel_scan);
-        tv_fktt = (TextView) findViewById(R.id.tv_fktt);
-        et_code = (EditText) findViewById(R.id.et_code);
-        et_fback = (EditText) findViewById(R.id.et_fback);
+        rel_scan2 = (RelativeLayout) findViewById(R.id.rel_scan2);
         img_scan = (ImageView) findViewById(R.id.img_scan);
+        img_scan2 = (ImageView) findViewById(R.id.img_scan2);
+        et_code = (EditText) findViewById(R.id.et_code);
+        et_code2 = (EditText) findViewById(R.id.et_code2);
+        et_fback = (EditText) findViewById(R.id.et_fback);
+        tv_fktt = (TextView) findViewById(R.id.tv_fktt);
         rec_up_photo = (RecyclerView) findViewById(R.id.rec_up_photo);
         bt_submit = (Button) findViewById(R.id.bt_submit);
     }
@@ -117,10 +121,13 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         // 设置adapter
         rec_up_photo.setAdapter(mAddAdapter);
         img_scan.setOnClickListener(this);
+        img_scan2.setOnClickListener(this);
         bt_submit.setOnClickListener(this);
         if ("0".equals(mKind)) {
             rel_scan.setVisibility(View.GONE);
+            rel_scan2.setVisibility(View.GONE);
             et_code.setVisibility(View.GONE);
+            et_code2.setVisibility(View.GONE);
             et_fback.setVisibility(View.GONE);
             tv_fktt.setVisibility(View.GONE);
         }
@@ -135,7 +142,12 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
             case R.id.img_scan:
                 //扫描二维码
                 //动态申请照相机权限,开启照相机
-                scanningCode();
+                scanningCode(1);
+                break;
+            case R.id.img_scan2:
+                //扫描二维码
+                //动态申请照相机权限,开启照相机
+                scanningCode(2);
                 break;
             case R.id.bt_submit:
                 if ("0".equals(mKind)) {//配送
@@ -149,17 +161,20 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     }
                 } else {
                     String code = String.valueOf(et_code.getText()).trim();
+                    String code2 = String.valueOf(et_code2.getText()).trim();
                     String fback = String.valueOf(et_fback.getText()).trim();
                     if ("".equals(code) || "请输入或扫码填入机器二维码".equals(code)) {
-                        //                        ToastUtils.showToast(UploadPicActivity.this, "请输入或扫码填入机器二维码");
                         code = "";
-                        //                        return;
+                    }
+                    if ("".equals(code2) || "请输入或扫码填入机器二维码".equals(code2)) {
+                        code2 = "";
                     }
                     if ("".equals(fback) || "请输入服务反馈".equals(fback)) {
                         ToastUtils.showToast(UploadPicActivity.this, "请输入服务反馈");
                         return;
                     }
                     scanCode = code;
+                    scanCode2 = code2;
                     markNote = fback;
                     recordTime = 0;
                     //上传图片
@@ -194,7 +209,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         /**
          * 处理二维码扫描结果
          */
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE || requestCode == REQUEST_CODE2) {
             //处理扫描结果（在界面上显示）
             if (null != data) {
                 Bundle bundle = data.getExtras();
@@ -206,6 +221,8 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     //获取扫描信息，填写到对应et
                     if (requestCode == REQUEST_CODE) {
                         et_code.setText(result);
+                    } else {
+                        et_code2.setText(result);
                     }
                 } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
                     Toast.makeText(this, "解析二维码失败", Toast.LENGTH_LONG).show();
@@ -214,7 +231,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
-    private void scanningCode() {
+    private void scanningCode(int kind) {
         //第二个参数是需要申请的权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -223,8 +240,11 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     MY_PERMISSIONS_REQUEST_CALL_PHONE2);
         } else {
             Intent intent = new Intent(this, SaomiaoUIActivity.class);//这是一个自定义的扫描界面，扫描UI框放大了。
-            // Intent intent = new Intent(this, CaptureActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            if (kind == 1) {
+                startActivityForResult(intent, REQUEST_CODE);
+            } else {
+                startActivityForResult(intent, REQUEST_CODE2);
+            }
         }
     }
 
@@ -234,9 +254,9 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
 
     //加载图片
     private void showImage(String imgPath) {
-        Bitmap bm = BitmapFactory.decodeFile(imgPath);
+//        Bitmap bm = BitmapFactory.decodeFile(imgPath);
         //添加到bitmap集合中
-        mBitmapList.add(bm);
+//        mBitmapList.add(bm);
         filePathList.add(imgPath);
         mAddAdapter.notifyDataSetChanged();
     }
@@ -271,7 +291,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                     ToastUtils.showToast(UploadPicActivity.this, "图片上传失败，二维码不匹配");
                 } else {
                     ProgressDialogUtil.hideDialog();
-                    ToastUtils.showToast(UploadPicActivity.this, "图片上传失败");
+                    ToastUtils.showToast(UploadPicActivity.this, "图片上传失败" + resbody);
                 }
             }
         });
@@ -287,6 +307,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
         params.put("Note", markNote);
         params.put("id", orderID);
         params.put("QCode", scanCode);
+        params.put("QCode2", scanCode2);
         HttpOkhUtils.getInstance().uploadFile(upLoadPic, params, "file", file, new HttpOkhUtils.HttpCallBack() {
             @Override
             public void onError(Request request, IOException e) {
@@ -297,7 +318,7 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onSuccess(int code, String resbody) {
                 if (code != 200) {
-                    ToastUtils.showToast(UploadPicActivity.this, "网络错误");
+                    ToastUtils.showToast(UploadPicActivity.this, "网络错误" + code);
                     return;
                 }
                 if ("1".equals(resbody)) {
@@ -307,9 +328,12 @@ public class UploadPicActivity extends BaseActivity implements View.OnClickListe
                         ProgressDialogUtil.hideDialog();
                         finish();
                     }
+                } else if ("2".equals(resbody)) {
+                    ProgressDialogUtil.hideDialog();
+                    ToastUtils.showToast(UploadPicActivity.this, "图片上传失败，二维码不匹配");
                 } else {
                     ProgressDialogUtil.hideDialog();
-                    ToastUtils.showToast(UploadPicActivity.this, "上传结果" + resbody);
+                    ToastUtils.showToast(UploadPicActivity.this, "上传失败" + resbody);
                 }
             }
         });

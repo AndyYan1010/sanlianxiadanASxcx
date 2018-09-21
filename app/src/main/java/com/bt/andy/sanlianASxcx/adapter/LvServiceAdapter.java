@@ -267,9 +267,10 @@ public class LvServiceAdapter extends BaseAdapter {
 
     //设置PopupWindow的View点击事件
     private void setOnPopupViewClick(View view, final int item, final String orderID) {
-        TextView tv_kp, tv_wait, tv_back, tv_compl, tv_cancel;
+        TextView tv_kp, tv_wait, tv_dj, tv_back, tv_compl, tv_cancel;
         tv_kp = (TextView) view.findViewById(R.id.tv_kp);//空跑
         tv_wait = (TextView) view.findViewById(R.id.tv_wait);//等通知
+        tv_dj = (TextView) view.findViewById(R.id.tv_dj);//待件
         tv_back = (TextView) view.findViewById(R.id.tv_back);//返工
         tv_compl = (TextView) view.findViewById(R.id.tv_compl);//完工
         tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);//取消
@@ -283,6 +284,12 @@ public class LvServiceAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 complAzOrder(item, orderID, "dengtongzhi");
+            }
+        });
+        tv_dj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                complAzOrder(item, orderID, "daijian");
             }
         });
         tv_back.setOnClickListener(new View.OnClickListener() {

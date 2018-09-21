@@ -11,21 +11,21 @@ package com.bt.andy.sanlianASxcx;
 
 public class NetConfig {
     //服务器总地址
-    public static String ROOT = "http://192.168.10.137:8081/page/";
-    //    public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
+    //    public static String ROOT = "http://192.168.10.137:8081/page/";
+    public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
 
     //查看详情
-    public static String DETAIL         = ROOT + "detail.do";
+    public static String DETAIL       = ROOT + "detail.do";
     //查询所有订单（抢单、排单）
-    public static String SELECTAPPLY = ROOT + "selectapply.do";
+    public static String SELECTAPPLY  = ROOT + "selectapply.do";
     //查询所有待预约
-    public static String DAIYUYUE       = ROOT + "daiyuyue.do";
+    public static String DAIYUYUE     = ROOT + "daiyuyue.do";
     //查询所有上门服务
-    public static String SMFW           = ROOT + "smfw.do";
+    public static String SMFW         = ROOT + "smfw.do";
     //查询所有服务完成
-    public static String COMPLETE1      = ROOT + "complete1.do";
+    public static String COMPLETE1    = ROOT + "complete1.do";
     //所有订单（日期）查询
-    public static String WANCHENGDATE   = ROOT + "wanchengdate.do";
+    public static String WANCHENGDATE = ROOT + "wanchengdate.do";
 
     //用户登录
     public static String LOGINURL = ROOT + "login.do";

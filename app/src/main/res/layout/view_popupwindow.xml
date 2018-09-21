@@ -35,6 +35,20 @@
             android:text="等通知"
             android:textColor="@color/vm_black_100"
             android:textSize="18sp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1px"
+            android:background="#888"/>
+
+        <TextView
+            android:id="@+id/tv_dj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="待件"
+            android:textColor="@color/vm_black_100"
+            android:textSize="18sp"/>
 
         <View
             android:layout_width="match_parent"
