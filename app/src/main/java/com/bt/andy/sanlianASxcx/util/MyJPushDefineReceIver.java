@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 
 import com.bt.andy.sanlianASxcx.MainActivity;
+import com.bt.andy.sanlianASxcx.MyApplication;
 import com.bt.andy.sanlianASxcx.R;
 import com.bt.andy.sanlianASxcx.activity.DistriActivity;
 import com.bt.andy.sanlianASxcx.activity.InstallActivity;
@@ -83,21 +84,25 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
         //        Logger.d(TAG, "extras : " + extras);
 
-        initSoundPool(context);
-        //振动
-        Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
-        vibrator.vibrate(3000);
+        if (MyApplication.isLogin != 1) {
+            return;
+        }
 
-        /**
-         * 发出短声音
-         */
-        mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
         //解析extra
         Gson gson = new Gson();
         TuiSongInfo tuiSongInfo = gson.fromJson(extras, TuiSongInfo.class);
-        String show_msg = "有" + tuiSongInfo.getNumber() + "笔新的" + tuiSongInfo.getOrdertype() + "待查看";
-        //显示通知
-        sendNotification(context, show_msg);
+        String fshifuid = tuiSongInfo.getFshifuid();
+        if ("all".equals(fshifuid) || MyApplication.userID.equals(fshifuid)) {
+            String show_msg = "有" + tuiSongInfo.getNumber() + "笔新的" + tuiSongInfo.getOrdertype() + "待查看";
+            //振动
+            Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
+            vibrator.vibrate(3000);
+            //配置声音
+            //        initSoundPool(context);
+            //        mSoundPool.play(mYuluSound, 1, 1, 0, 0, 1);
+            //显示通知
+            sendNotification(context, show_msg);
+        }
     }
 
     public void initSoundPool(Context context) {

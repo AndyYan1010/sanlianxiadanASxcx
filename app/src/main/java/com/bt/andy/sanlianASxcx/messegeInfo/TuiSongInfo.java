@@ -18,6 +18,11 @@ public class TuiSongInfo {
 
     private String ordertype;
     private String number;
+    /**
+     * fshifuid : all
+     */
+
+    private String fshifuid;
 
     public String getOrdertype() {
         return ordertype;
@@ -33,5 +38,13 @@ public class TuiSongInfo {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public String getFshifuid() {
+        return fshifuid;
+    }
+
+    public void setFshifuid(String fshifuid) {
+        this.fshifuid = fshifuid;
     }
 }

@@ -83,6 +83,7 @@ public class User_F extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 SpUtils.putBoolean(getContext(), "isRem", false);
+                MyApplication.isLogin = 0;
                 Intent intent = new Intent();
                 intent.setClass(getContext(), LoginActivity.class);
                 startActivity(intent);

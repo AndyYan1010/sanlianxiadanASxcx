@@ -133,18 +133,19 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 LoginInfo loginInfo = gson.fromJson(resbody, LoginInfo.class);
                 int result = loginInfo.getResult();
                 if (result == 1) {
+                    MyApplication.isLogin = 1;
                     MyApplication.userName = loginInfo.getUsername();
                     MyApplication.userID = loginInfo.getId();
                     String isAlias = SpUtils.getString(LoginActivity.this, "IsAlias", "");
                     //判断是否设置过别名
                     if ("".equals(isAlias) || !"1".equals(isAlias)) {
                         //推送设置别名
-                        setAlias(loginInfo.getId());
+                        setAlias(loginInfo.getUsername());
                     } else {
                         String aliasName = SpUtils.getString(LoginActivity.this, "AliasID", "");
-                        if (!aliasName.equals(loginInfo.getId())) {
+                        if (!aliasName.equals(loginInfo.getUsername())) {
                             //推送设置别名
-                            setAlias(loginInfo.getId());
+                            setAlias(loginInfo.getUsername());
                         }
                     }
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -158,8 +159,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    private void setAlias(String id) {
-        String alias = id;//用户id
+    private void setAlias(String name) {
+        String alias = name;//用户名
         //        String alias = "9527";
         // 调用 Handler 来异步设置别名
         mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, alias));
@@ -175,7 +176,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
                     ToastUtils.showToast(LoginActivity.this, "success");
                     SpUtils.putString(LoginActivity.this, "IsAlias", "1");
-                    SpUtils.putString(LoginActivity.this, "AliasID", MyApplication.userID);
+                    SpUtils.putString(LoginActivity.this, "AliasID", MyApplication.userName);
                     break;
                 case 6002:
                     logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
