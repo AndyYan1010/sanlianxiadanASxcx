@@ -155,4 +155,8 @@ public class ComplFragment extends Fragment {
             }
         });
     }
+    public void manualRefresh() {
+        //获取待接单
+        getComplOrder();
+    }
 }

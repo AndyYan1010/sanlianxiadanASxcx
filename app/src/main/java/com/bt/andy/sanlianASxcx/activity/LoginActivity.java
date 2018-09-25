@@ -126,7 +126,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             public void onSuccess(int code, String resbody) {
                 ProgressDialogUtil.hideDialog();
                 if (code != 200) {
-                    ToastUtils.showToast(LoginActivity.this, code + "网络错误");
+                    ToastUtils.showToast(LoginActivity.this, "网络错误" + code);
                     return;
                 }
                 Gson gson = new Gson();

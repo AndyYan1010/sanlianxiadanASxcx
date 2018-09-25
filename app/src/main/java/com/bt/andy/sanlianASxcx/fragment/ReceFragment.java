@@ -74,7 +74,7 @@ public class ReceFragment extends Fragment {
                 //查看详情
                 InstAndRepInfo.ApplylistBean applylistBean = mData.get(i);
                 String ordertype = applylistBean.getOrdertype();
-                if (null == ordertype ||"".equals(ordertype)) {
+                if (null == ordertype || "".equals(ordertype)) {
                     ToastUtils.showToast(getContext(), "该订单未填写类型，不可查询");
                 } else {
                     if (ordertype.contains("配送")) {
@@ -153,5 +153,10 @@ public class ReceFragment extends Fragment {
                 ToastUtils.showToast(getContext(), instInfo.getMessage());
             }
         });
+    }
+
+    public void manualRefresh() {
+        //获取待接单
+        getPendOrder();
     }
 }

@@ -11,7 +11,7 @@ package com.bt.andy.sanlianASxcx;
 
 public class NetConfig {
     //服务器总地址
-    //    public static String ROOT = "http://192.168.10.137:8081/page/";
+    //        public static String ROOT = "http://192.168.10.137:8081/page/";
     public static String ROOT = "http://hnyzsl.xicp.net:8081/slpdJK/page/";
 
     //查看详情

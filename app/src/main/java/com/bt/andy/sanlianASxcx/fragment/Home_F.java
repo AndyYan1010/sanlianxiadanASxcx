@@ -50,16 +50,16 @@ public class Home_F extends Fragment {
         ArrayList<Fragment> fragments = new ArrayList<>();
         // 装填
         //待接单界面
-        ReceFragment tourPlanFragment = new ReceFragment();
+        final ReceFragment tourPlanFragment = new ReceFragment();
         fragments.add(tourPlanFragment);
         //待预约界面
-        OrderFragment orderFragment = new OrderFragment();
+        final OrderFragment orderFragment = new OrderFragment();
         fragments.add(orderFragment);
         //上门服务界面
-        ServiceFragment serviceFragment = new ServiceFragment();
+        final ServiceFragment serviceFragment = new ServiceFragment();
         fragments.add(serviceFragment);
         //服务完成界面
-        ComplFragment complFragment = new ComplFragment();
+        final ComplFragment complFragment = new ComplFragment();
         fragments.add(complFragment);
 
         // 创建ViewPager适配器
@@ -67,7 +67,7 @@ public class Home_F extends Fragment {
         myPagerAdapter.setFragments(fragments);
         // 给ViewPager设置适配器
         mView_pager.setAdapter(myPagerAdapter);
-        //        mView_pager.setOffscreenPageLimit(4);
+        // mView_pager.setOffscreenPageLimit(4);
         //设置viewpager不可滑动
         //mView_pager_space.setCanScroll(false);
         //tablayout关联tablayout和viewpager实现联动
@@ -75,5 +75,55 @@ public class Home_F extends Fragment {
         for (int i = 0; i < conts.length; i++) {
             mTablayout.getTabAt(i).setText(conts[i]);
         }
+        mTablayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String title = String.valueOf(tab.getText());
+                if ("待接单".equals(title)) {
+                    if (null != tourPlanFragment && tourPlanFragment.isVisible()) {
+                        tourPlanFragment.manualRefresh();
+                    }
+                } else if ("待预约".equals(title)) {
+                    if (null != orderFragment && orderFragment.isVisible()) {
+                        orderFragment.manualRefresh();
+                    }
+                } else if ("上门服务".equals(title)) {
+                    if (null != serviceFragment && serviceFragment.isVisible()) {
+                        serviceFragment.manualRefresh();
+                    }
+                } else if ("服务完成".equals(title)) {
+                    if (null != complFragment && complFragment.isVisible()) {
+                        complFragment.manualRefresh();
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                String title = String.valueOf(tab.getText());
+                if ("待接单".equals(title)) {
+                    if (null != tourPlanFragment && tourPlanFragment.isVisible()) {
+                        tourPlanFragment.manualRefresh();
+                    }
+                } else if ("待预约".equals(title)) {
+                    if (null != orderFragment && orderFragment.isVisible()) {
+                        orderFragment.manualRefresh();
+                    }
+                } else if ("上门服务".equals(title)) {
+                    if (null != serviceFragment && serviceFragment.isVisible()) {
+                        serviceFragment.manualRefresh();
+                    }
+                } else if ("服务完成".equals(title)) {
+                    if (null != complFragment && complFragment.isVisible()) {
+                        complFragment.manualRefresh();
+                    }
+                }
+            }
+        });
     }
 }

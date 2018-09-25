@@ -72,7 +72,7 @@ public class OrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取订单信息
-        //getOrderInfo();
+        //        getOrderInfo();
     }
 
     private void initData() {
@@ -95,7 +95,7 @@ public class OrderFragment extends Fragment {
                     } else if (ordertype.contains("维修")) {
                         mKind = "2";
                     }
-                    new GetOrderDetailInfoUtil(getContext(), mKind, false).showMoreInfo(applylistBean.getId());
+                    new GetOrderDetailInfoUtil(getContext(), mKind, true).showMoreInfo(applylistBean.getId());
                 }
             }
         });
@@ -217,5 +217,9 @@ public class OrderFragment extends Fragment {
                 }
             }
         });
+    }
+    public void manualRefresh() {
+        //获取待接单
+        getOrderInfo();
     }
 }

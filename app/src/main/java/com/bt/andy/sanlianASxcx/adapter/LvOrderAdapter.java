@@ -124,19 +124,10 @@ public class LvOrderAdapter extends BaseAdapter {
             } else {
                 viewholder.img_kind.setImageResource(R.drawable.icon_weixiu);
             }
-            viewholder.tv_accept.setText("扫码");
-            viewholder.tv_call_phone.setText("打电话");
+            viewholder.tv_accept.setText("打电话");
+            viewholder.tv_call_phone.setText("预约");
             String fbstatus = applylistBean.getFbstatus();
             viewholder.tv_accept.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    which = i;
-                    //扫描二维码
-                    //动态申请照相机权限,开启照相机
-                    scanningCode();
-                }
-            });
-            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String phoneNum = mList.get(i).getFtel();
@@ -149,16 +140,28 @@ public class LvOrderAdapter extends BaseAdapter {
                     ShowCallUtil.showCallDialog(mContext, phoneNum, orderID);
                 }
             });
-            if ("4".equals(fbstatus)) {//打过电话
-                viewholder.tv_call_phone.setText("预约");
-                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //预约更改成上门服务状态
-                        upToService(mList.get(i).getId(), i);
-                    }
-                });
-            }
+            viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //预约更改成上门服务状态
+                    upToService(mList.get(i).getId(), i);
+
+                    //                    which = i;
+                    //                    //扫描二维码
+                    //                    //动态申请照相机权限,开启照相机
+                    //                    scanningCode();
+                }
+            });
+//            if ("4".equals(fbstatus)) {//打过电话
+//                viewholder.tv_call_phone.setText("预约");
+//                viewholder.tv_call_phone.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        //预约更改成上门服务状态
+//                        upToService(mList.get(i).getId(), i);
+//                    }
+//                });
+//            }
         }
         return view;
     }
