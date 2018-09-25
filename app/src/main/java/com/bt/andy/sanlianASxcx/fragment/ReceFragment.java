@@ -97,14 +97,14 @@ public class ReceFragment extends Fragment {
         });
         smt_refresh.setEnableLoadMore(false);
         //获取待接单
-        //        getPendOrder();
+        getPendOrder();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //获取待接单
-        getPendOrder();
+        //        getPendOrder();
     }
 
     //获取待接单
