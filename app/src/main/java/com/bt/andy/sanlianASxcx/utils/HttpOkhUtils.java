@@ -147,7 +147,10 @@ public class HttpOkhUtils {
                     ThreadUtils.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
-                            httpCallBack.onSuccess(code, buffer);
+                            try {
+                                httpCallBack.onSuccess(code, buffer);
+                            } catch (Exception e) {
+                            }
                         }
                     });
                 } catch (IOException e) {

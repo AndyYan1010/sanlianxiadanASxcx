@@ -67,7 +67,7 @@ public class ServiceFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //获取服务内容
-        //        getServiceCont();
+        //getServiceCont();
     }
 
     private void initData() {

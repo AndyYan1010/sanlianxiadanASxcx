@@ -166,7 +166,7 @@ public class Search_F extends Fragment implements View.OnClickListener {
                     mData.addAll(oredrpaylist);
                     orderAdapter.notifyDataSetChanged();
                 } else {
-                    ToastUtils.showToast(getContext(), "网络错误");
+                    ToastUtils.showToast(getContext(), "查询失败，没有订单信息");
                 }
             }
         });

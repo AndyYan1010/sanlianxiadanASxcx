@@ -143,6 +143,13 @@ public class MyJPushDefineReceIver extends BroadcastReceiver {
         //        }
         //        chatIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         //        Intent[] intents = {mainIntent, chatIntent};
+        //音量控制,初始化定义
+        AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        //当前音量
+        //        int currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        //最大音量
+        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); //tempVolume:音量绝对值
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         Intent[] intents = {mainIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(context, 1, intents, PendingIntent.FLAG_UPDATE_CURRENT);

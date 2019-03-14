@@ -93,12 +93,84 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     ToastUtils.showToast(LoginActivity.this, "请输入密码");
                     return;
                 }
+
+                //                testInterFace();
+                //                try {
+                //                    String encrypt = DESECBUtils.encrypt("852", "90908080");
+                //                    //                    String encrypt = DESECBUtils.encrypt("1E12EA56-BBA4-4DBE-937A-CE8B29BEC4AC", "90908080");//1eee37cc0578120e48dc803477d9de095be5e02c1eea3de1a3b187ff65b26c172b8c724ee3b4d5a6
+                //                    System.out.println(encrypt);
+                ////                    String decrypt = DESECBUtils.decrypt("a86424b1ad55756a5df90a3a72afda42cb771ba4695a54a5", "90908080");
+                ////                    System.out.println(decrypt);
+                //                } catch (Exception e) {
+                //                    e.printStackTrace();
+                //                }
                 //是否记住账号密码
                 isNeedRem(name, psd);
                 //登录
                 loginToService(name, psd);
                 break;
         }
+    }
+
+    private void testQCInterface(String miwen) {
+        //{"device_id":"54980001","time":"20180917","qr_code":"8b1a7d9011307a05"}
+        ProgressDialogUtil.startShow(LoginActivity.this, "测试");
+        // String ceshiUrl = "http://192.168.10.137:8081/deviceCar.do";
+        String ceshiUrl = "https://www.lzyyy.com/baoxiaodanxtb/deviceCar.do";
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("device_id", "54980001");//90ef0112
+        params.put("time", "20180917");
+        params.put("qr_code", miwen);
+        params.setUseJsonStreamer(true);
+        HttpOkhUtils.getInstance().doPost(ceshiUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(LoginActivity.this, "网络错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code == 200) {
+                    ToastUtils.showToast(LoginActivity.this, resbody);
+                } else {
+                    ToastUtils.showToast(LoginActivity.this, "网络错误" + code);
+                }
+            }
+        });
+    }
+
+    private void testInterFace() {
+        ProgressDialogUtil.startShow(LoginActivity.this, "测试");
+        //String ceshiUrl = "https://www.lzyyy.com/baoxiaodan/page/deviceXtb.html";
+        String ceshiUrl = "http://192.168.10.137:8081/deviceXtb.do";
+        //        String ceshiUrl = "https://www.lzyyy.com/baoxiaodanxtb/deviceXtb.do";
+        RequestParamsFM params = new RequestParamsFM();
+        params.put("device_id", "54980001");
+        params.put("time", "20180917123230");
+        params.put("lng", "12.000000");
+        params.put("lat", "12.000000");
+        params.put("status", 0);
+        params.put("version_code", 0);
+        params.setUseJsonStreamer(true);
+        HttpOkhUtils.getInstance().doPost(ceshiUrl, params, new HttpOkhUtils.HttpCallBack() {
+            @Override
+            public void onError(Request request, IOException e) {
+                ProgressDialogUtil.hideDialog();
+                ToastUtils.showToast(LoginActivity.this, "网络错误");
+            }
+
+            @Override
+            public void onSuccess(int code, String resbody) {
+                ProgressDialogUtil.hideDialog();
+                if (code == 200) {
+                    ToastUtils.showToast(LoginActivity.this, resbody);
+                } else {
+                    ToastUtils.showToast(LoginActivity.this, "网络错误" + code);
+                }
+            }
+        });
     }
 
     private void isNeedRem(String name, String psd) {
